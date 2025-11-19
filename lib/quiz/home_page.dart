@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mestre_nr/core/theme/app_colors.dart';
+import 'package:mestre_nr/core/theme/theme_controller.dart';
 
 const double mobileBreakpoint = 600;
 const double tabletBreakpoint = 900;
@@ -28,15 +29,52 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: custom.background,
+      appBar: AppBar(
+        toolbarHeight: 70,
+        backgroundColor: custom.background,
+        title: Padding(
+          padding: EdgeInsets.only(top: 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                'assets/icons/logo.svg',
+                width: 70,
+                height: 70,
+                colorFilter: ColorFilter.mode(colors.primary, BlendMode.srcIn),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                "Mestre NR",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: custom.text,
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          ValueListenableBuilder(
+            valueListenable: ThemeController.themeMode,
+            builder: (context, mode, _) {
+              final isDark = mode == ThemeMode.dark;
+              return IconButton(
+                icon: Icon(
+                  isDark ? Icons.light_mode : Icons.dark_mode,
+                  color: colors.secondary,
+                ),
+                onPressed: () => ThemeController.toggleTheme(),
+              );
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
             final width = constraints.maxWidth;
-            double titleSize = isMobile(width)
-                ? 26
-                : isTablet(width)
-                ? 32
-                : 40;
             double badgeFontSize = isMobile(width) ? 14 : 18;
             double sectionTitleSize = isMobile(width) ? 16 : 20;
             double buttonFontSize = isMobile(width) ? 18 : 22;
@@ -50,31 +88,6 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons/logo.svg',
-                        width: isMobile(width) ? 60 : 90,
-                        height: isMobile(width) ? 60 : 90,
-                        colorFilter: ColorFilter.mode(
-                          colors.primary,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "Mestre NR",
-                        style: TextStyle(
-                          fontSize: titleSize,
-                          fontWeight: FontWeight.bold,
-                          color: custom.text,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: verticalSpacing * 1.5),
-
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
