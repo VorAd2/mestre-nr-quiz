@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mestre_nr/core/theme/app_colors.dart';
 
 const double mobileBreakpoint = 600;
 const double tabletBreakpoint = 900;
@@ -21,8 +23,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final custom = Theme.of(context).extension<AppColorScheme>()!;
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: custom.background,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -48,17 +53,22 @@ class _HomePageState extends State<HomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.shield_outlined,
-                        size: isMobile(width) ? 60 : 90,
-                        color: Colors.blue,
+                      SvgPicture.asset(
+                        'assets/icons/logo.svg',
+                        width: isMobile(width) ? 60 : 90,
+                        height: isMobile(width) ? 60 : 90,
+                        colorFilter: ColorFilter.mode(
+                          colors.primary,
+                          BlendMode.srcIn,
+                        ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(width: 10),
                       Text(
                         "Mestre NR",
                         style: TextStyle(
                           fontSize: titleSize,
                           fontWeight: FontWeight.bold,
+                          color: custom.text,
                         ),
                       ),
                     ],
@@ -72,11 +82,12 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(
                         fontSize: sectionTitleSize,
                         fontWeight: FontWeight.w600,
+                        color: custom.text,
                       ),
                     ),
                   ),
                   const SizedBox(height: 10),
-                  getWrap(width, badgeFontSize),
+                  getWrap(width, badgeFontSize, colors),
                   SizedBox(height: verticalSpacing * 1.5),
 
                   Align(
@@ -86,17 +97,19 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(
                         fontSize: sectionTitleSize,
                         fontWeight: FontWeight.w600,
+                        color: custom.text,
                       ),
                     ),
                   ),
                   const SizedBox(height: 10),
-                  getDropdown(width, badgeFontSize),
+                  getDropdown(width, badgeFontSize, colors),
                   SizedBox(height: verticalSpacing * 2),
 
                   getStartBtn(
                     width: width,
                     badgeFontSize: badgeFontSize,
                     buttonFontSize: buttonFontSize,
+                    colors: colors,
                   ),
                   SizedBox(height: verticalSpacing),
                 ],
@@ -108,7 +121,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget getWrap(double width, double badgeFontSize) {
+  Widget getWrap(double width, double badgeFontSize, ColorScheme colors) {
     return Wrap(
       spacing: 8,
       runSpacing: 10,
@@ -128,14 +141,14 @@ class _HomePageState extends State<HomePage> {
               horizontal: isMobile(width) ? 14 : 20,
             ),
             decoration: BoxDecoration(
-              color: selected ? Colors.blue : Colors.grey.shade300,
+              color: selected ? colors.primary : colors.surface,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               "NR $nr",
               style: TextStyle(
                 fontSize: badgeFontSize,
-                color: selected ? Colors.white : Colors.black87,
+                color: selected ? Colors.white : colors.onSurface,
                 fontWeight: selected ? FontWeight.bold : FontWeight.w400,
               ),
             ),
@@ -145,11 +158,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget getDropdown(double width, double badgeFontSize) {
+  Widget getDropdown(double width, double badgeFontSize, ColorScheme colors) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade400),
       ),
@@ -157,10 +170,14 @@ class _HomePageState extends State<HomePage> {
         child: DropdownButton<String>(
           hint: Text(
             "Escolher dificuldade",
-            style: TextStyle(fontSize: badgeFontSize),
+            style: TextStyle(fontSize: badgeFontSize, color: colors.onSurface),
           ),
           value: selectedDifficulty,
-          icon: Icon(Icons.arrow_drop_down, size: isMobile(width) ? 26 : 30),
+          icon: Icon(
+            Icons.arrow_drop_down,
+            size: isMobile(width) ? 26 : 30,
+            color: colors.onSurface,
+          ),
           items: const [
             DropdownMenuItem(value: "Fácil", child: Text("Fácil")),
             DropdownMenuItem(value: "Médio", child: Text("Médio")),
@@ -178,12 +195,13 @@ class _HomePageState extends State<HomePage> {
     required double width,
     required double badgeFontSize,
     required double buttonFontSize,
+    required ColorScheme colors,
   }) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
+          backgroundColor: colors.primary,
           padding: EdgeInsets.symmetric(vertical: isMobile(width) ? 16 : 22),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
