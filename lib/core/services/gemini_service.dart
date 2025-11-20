@@ -5,15 +5,13 @@ class GeminiService {
       'Retorne uma frase poética em ingles ou portugues. Apenas a frase, nada mais';
 
   static Future<Object?> fetchQuizData(Map<String, Object> userParams) async {
-    Gemini.instance
-        .prompt(parts: [Part.text(prompt)])
-        .then((value) {
-          print('FRASE POETICA: ${value?.output}');
-          return value?.output;
-        })
-        .catchError((e) {
-          print('ERROR FETCH: $e');
-        });
-    return null;
+    try {
+      final response = await Gemini.instance.prompt(parts: [Part.text(prompt)]);
+      print('FRASE POETICA: ${response?.output}');
+      return response?.output;
+    } catch (e) {
+      print('ERROR FETCH: $e');
+      return null;
+    }
   }
 }
