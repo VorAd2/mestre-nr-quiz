@@ -1,24 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mestre_nr/app/loading_view.dart';
 import 'package:mestre_nr/core/theme/app_colors.dart';
-import 'package:mestre_nr/core/theme/theme_controller.dart';
+import 'package:mestre_nr/core/widgets/theme_button.dart';
+import 'package:mestre_nr/core/utils/screen_constraints.dart';
 
-const double mobileBreakpoint = 600;
-const double tabletBreakpoint = 900;
-
-bool isMobile(double width) => width < mobileBreakpoint;
-bool isTablet(double width) =>
-    width >= mobileBreakpoint && width < tabletBreakpoint;
-bool isDesktop(double width) => width >= tabletBreakpoint;
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomeView extends StatefulWidget {
+  const HomeView({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeViewState extends State<HomeView> {
   final Set<int> selectedNRs = {};
   String? selectedDifficulty;
 
@@ -29,61 +23,24 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: custom.background,
-      appBar: AppBar(
-        toolbarHeight: 70,
-        backgroundColor: custom.background,
-        title: Padding(
-          padding: EdgeInsets.only(top: 15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                'assets/icons/logo.svg',
-                width: 70,
-                height: 70,
-                colorFilter: ColorFilter.mode(colors.primary, BlendMode.srcIn),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                "Mestre NR",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: custom.text,
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          ValueListenableBuilder(
-            valueListenable: ThemeController.themeMode,
-            builder: (context, mode, _) {
-              final isDark = mode == ThemeMode.dark;
-              return IconButton(
-                icon: Icon(
-                  isDark ? Icons.light_mode : Icons.dark_mode,
-                  color: colors.secondary,
-                ),
-                onPressed: () => ThemeController.toggleTheme(),
-              );
-            },
-          ),
-        ],
-      ),
+      appBar: getAppBar(custom, colors),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
             final width = constraints.maxWidth;
-            double badgeFontSize = isMobile(width) ? 14 : 18;
-            double sectionTitleSize = isMobile(width) ? 16 : 20;
-            double buttonFontSize = isMobile(width) ? 18 : 22;
-            double verticalSpacing = isMobile(width) ? 20 : 35;
+            double badgeFontSize = ScreenConstraints.isMobile(width) ? 14 : 18;
+            double sectionTitleSize = ScreenConstraints.isMobile(width)
+                ? 16
+                : 20;
+            double buttonFontSize = ScreenConstraints.isMobile(width) ? 18 : 22;
+            double verticalSpacing = ScreenConstraints.isMobile(width)
+                ? 20
+                : 35;
 
             return SingleChildScrollView(
               padding: EdgeInsets.symmetric(
-                horizontal: isMobile(width) ? 20 : 80,
-                vertical: 30,
+                horizontal: ScreenConstraints.isMobile(width) ? 20 : 80,
+                vertical: 20,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -100,7 +57,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  getWrap(width, badgeFontSize, colors),
+                  getNrs(width, badgeFontSize, colors),
                   SizedBox(height: verticalSpacing * 1.5),
 
                   Align(
@@ -124,7 +81,6 @@ class _HomePageState extends State<HomePage> {
                     buttonFontSize: buttonFontSize,
                     colors: colors,
                   ),
-                  SizedBox(height: verticalSpacing),
                 ],
               ),
             );
@@ -134,7 +90,38 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget getWrap(double width, double badgeFontSize, ColorScheme colors) {
+  PreferredSizeWidget getAppBar(AppColorScheme custom, ColorScheme colors) {
+    return AppBar(
+      toolbarHeight: 70,
+      backgroundColor: custom.background,
+      title: Padding(
+        padding: EdgeInsets.only(top: 15),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              'assets/icons/logo.svg',
+              width: 70,
+              height: 70,
+              colorFilter: ColorFilter.mode(colors.primary, BlendMode.srcIn),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              "Mestre NR",
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: custom.text,
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [ThemeButton()],
+    );
+  }
+
+  Widget getNrs(double width, double badgeFontSize, ColorScheme colors) {
     return Wrap(
       spacing: 8,
       runSpacing: 10,
@@ -151,7 +138,7 @@ class _HomePageState extends State<HomePage> {
           child: Container(
             padding: EdgeInsets.symmetric(
               vertical: 8,
-              horizontal: isMobile(width) ? 14 : 20,
+              horizontal: ScreenConstraints.isMobile(width) ? 14 : 20,
             ),
             decoration: BoxDecoration(
               color: selected ? colors.primary : colors.surface,
@@ -173,7 +160,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget getDropdown(double width, double badgeFontSize, ColorScheme colors) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -188,7 +175,7 @@ class _HomePageState extends State<HomePage> {
           value: selectedDifficulty,
           icon: Icon(
             Icons.arrow_drop_down,
-            size: isMobile(width) ? 26 : 30,
+            size: ScreenConstraints.isMobile(width) ? 22 : 26,
             color: colors.onSurface,
           ),
           items: const [
@@ -215,7 +202,9 @@ class _HomePageState extends State<HomePage> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: colors.primary,
-          padding: EdgeInsets.symmetric(vertical: isMobile(width) ? 16 : 22),
+          padding: EdgeInsets.symmetric(
+            vertical: ScreenConstraints.isMobile(width) ? 12 : 18,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -232,6 +221,13 @@ class _HomePageState extends State<HomePage> {
             );
             return;
           }
+          final userParams = {'nrs': selectedNRs, 'diff': selectedDifficulty};
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => LoadingView(userParams: userParams),
+            ),
+          );
         },
         child: Text(
           "Iniciar Quiz",

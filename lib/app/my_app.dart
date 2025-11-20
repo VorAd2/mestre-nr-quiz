@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mestre_nr/core/theme/app_colors.dart';
 import 'package:mestre_nr/core/theme/theme_controller.dart';
-import 'package:mestre_nr/quiz/home_page.dart';
+import 'package:mestre_nr/app/home_view.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: mode,
-          home: const HomePage(),
+          home: const HomeView(),
         );
       },
     );
