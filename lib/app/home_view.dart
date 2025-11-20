@@ -221,7 +221,7 @@ class _HomeViewState extends State<HomeView> {
             );
             return;
           }
-          final userParams = {'nrs': selectedNRs, 'diff': selectedDifficulty};
+          final userParams = {'nrs': selectedNRs, 'diff': selectedDifficulty!};
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(

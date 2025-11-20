@@ -13,6 +13,8 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.2.2
+  flutter_gemini: ^3.0.0
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -26,3 +28,4 @@ flutter:
 
   assets:
     - assets/icons/logo.svg
+    - .env

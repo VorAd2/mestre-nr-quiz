@@ -5,7 +5,7 @@ import 'package:mestre_nr/quiz/quiz_controller.dart';
 import 'package:mestre_nr/quiz/quiz_view.dart';
 
 class LoadingView extends StatefulWidget {
-  final Object userParams;
+  final Map<String, Object> userParams;
   const LoadingView({super.key, required this.userParams});
 
   @override
@@ -13,12 +13,12 @@ class LoadingView extends StatefulWidget {
 }
 
 class _LoadingViewState extends State<LoadingView> {
-  final controller = QuizController();
+  final quizController = QuizController();
 
   @override
   void initState() {
     super.initState();
-    controller.generateData();
+    quizController.generateData(widget.userParams);
   }
 
   @override
@@ -30,7 +30,7 @@ class _LoadingViewState extends State<LoadingView> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           return ValueListenableBuilder<bool>(
-            valueListenable: controller.isLoaded,
+            valueListenable: quizController.isLoaded,
             builder: (context, loaded, _) {
               if (loaded) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -38,7 +38,7 @@ class _LoadingViewState extends State<LoadingView> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => QuizView(data: controller.data),
+                      builder: (_) => QuizView(data: quizController.data),
                     ),
                   );
                 });

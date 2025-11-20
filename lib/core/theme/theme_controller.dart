@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ThemeController {
-  static final ValueNotifier<ThemeMode> themeMode = ValueNotifier(
-    ThemeMode.system,
-  );
+  static final themeMode = ValueNotifier<ThemeMode>(ThemeMode.system);
 
   static void toggleTheme() {
     if (themeMode.value == ThemeMode.light) {
