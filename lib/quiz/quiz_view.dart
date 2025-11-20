@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mestre_nr/app/home_view.dart';
 import 'package:mestre_nr/core/theme/app_colors.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
+import 'package:mestre_nr/quiz/widgets/circular_count.dart';
 
 class QuizView extends StatefulWidget {
   final Object? data;
@@ -19,13 +20,13 @@ class _QuizViewState extends State<QuizView> {
     final custom = Theme.of(context).extension<AppColorScheme>()!;
     return Scaffold(
       backgroundColor: custom.background,
-      appBar: getAppBar(),
+      appBar: getAppBar(colors),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [Text(msg)],
+              children: [CircularCountdown(), Text(msg)],
             ),
           );
         },
@@ -33,25 +34,32 @@ class _QuizViewState extends State<QuizView> {
     );
   }
 
-  PreferredSizeWidget getAppBar() {
+  PreferredSizeWidget getAppBar(ColorScheme colors) {
     return AppBar(
+      backgroundColor: colors.surfaceContainerLow,
       centerTitle: true,
-      title: Text('Quiz'),
-      leading: getReturnBtn(),
+      title: Text('Quiz', style: TextStyle(color: colors.onSurfaceVariant)),
+      leading: getReturnBtn(colors),
       actions: [ThemeButton()],
     );
   }
 
-  Widget getReturnBtn() {
+  Widget getReturnBtn(ColorScheme colors) {
     return IconButton(
+      color: colors.onSurfaceVariant,
       onPressed: () async {
         final shouldPop = await showDialog(
           context: context,
           builder: (dialogContext) {
             return AlertDialog(
-              title: Text('Sair do Quiz?'),
+              backgroundColor: colors.surfaceContainerLow,
+              title: Text(
+                'Sair do Quiz?',
+                style: TextStyle(color: colors.onSurfaceVariant),
+              ),
               content: Text(
                 'Tem certeza de que deseja retornar? Seu progresso será perdido.',
+                style: TextStyle(color: colors.onSurfaceVariant),
               ),
               actions: [
                 TextButton(

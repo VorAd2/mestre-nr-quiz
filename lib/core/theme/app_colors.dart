@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color lightPrimary = Color(0xFF007BFF);
-  static const Color lightSecondary = Color(0xFFFFC107);
-  static const Color lightBackground = Color(0xFFF8F9FA);
-  static const Color lightGray = Color.fromARGB(255, 221, 221, 221);
-  static const Color darkGray = Color.fromARGB(255, 197, 197, 197);
-  static const Color lightText = Color(0xFF212529);
-  static const Color lightSuccess = Color(0xFF28A745);
-  static const Color darkPrimary = Color(0xFF4CAF50);
-  static const Color darkSecondary = Color(0xFFFF9800);
-  static const Color darkBackground = Color(0xFF1E1E1E);
-  static const Color darkSurface = Color(0xFF2C2C2C);
-  static const Color darkText = Color.fromARGB(255, 237, 237, 238);
+  static const Color _lightPrimary = Color(0xFF007BFF);
+  static const Color _lightSecondary = Color(0xFFFFC107);
+  static const Color _lightBackground = Color(0xFFF8F9FA);
+  static const Color _lightGray = Color.fromARGB(255, 221, 221, 221);
+  static const Color _darkGray = Color.fromARGB(255, 197, 197, 197);
+  static const Color _lightText = Color(0xFF212529);
+  static const Color _lightSuccess = Color(0xFF28A745);
+  static const Color _darkPrimary = Color.fromARGB(255, 39, 160, 44);
+  static const Color _darkSecondary = Color(0xFFFF9800);
+  static const Color _darkBackground = Color(0xFF1E1E1E);
+  static const Color _darkSurface = Color(0xFF2C2C2C);
+  static const Color _darkText = Color.fromARGB(255, 237, 237, 238);
 }
 
 class AppColorScheme extends ThemeExtension<AppColorScheme> {
@@ -49,18 +49,20 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
 ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   colorScheme: ColorScheme.light(
-    primary: AppColors.lightPrimary,
-    secondary: AppColors.lightSecondary,
-    surface: AppColors.lightGray,
-    onSurface: AppColors.lightText,
+    primary: AppColors._lightPrimary,
+    secondary: AppColors._lightSecondary,
+    surface: AppColors._lightGray,
+    onSurface: AppColors._lightText,
+    onSurfaceVariant: AppColors._lightText,
     onPrimary: Colors.white,
     onSecondary: Colors.black,
   ),
+  appBarTheme: const AppBarTheme(surfaceTintColor: Colors.transparent),
   extensions: const [
     AppColorScheme(
-      success: AppColors.lightSuccess,
-      background: AppColors.lightBackground,
-      text: AppColors.lightText,
+      success: AppColors._lightSuccess,
+      background: AppColors._lightBackground,
+      text: AppColors._lightText,
     ),
   ],
 );
@@ -68,18 +70,21 @@ ThemeData lightTheme = ThemeData(
 ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   colorScheme: ColorScheme.dark(
-    primary: AppColors.darkPrimary,
-    secondary: AppColors.darkSecondary,
-    surface: AppColors.darkGray,
+    primary: AppColors._darkPrimary,
+    secondary: AppColors._darkSecondary,
+    surface: AppColors._darkGray,
+    surfaceContainerLow: const Color.fromARGB(255, 56, 56, 56),
     onSurface: Colors.black,
+    onSurfaceVariant: Colors.white,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
   ),
+  appBarTheme: const AppBarTheme(surfaceTintColor: Colors.transparent),
   extensions: const [
     AppColorScheme(
-      success: AppColors.darkPrimary,
-      background: AppColors.darkBackground,
-      text: AppColors.darkText,
+      success: AppColors._darkPrimary,
+      background: AppColors._darkBackground,
+      text: AppColors._darkText,
     ),
   ],
 );
