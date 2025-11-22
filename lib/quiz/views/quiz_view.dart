@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:mestre_nr/app/home_view.dart';
 import 'package:mestre_nr/core/theme/app_colors.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
+import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
 import 'package:mestre_nr/quiz/widgets/circular_count.dart';
 
 class QuizView extends StatefulWidget {
-  final Object? data;
-  const QuizView({super.key, required this.data});
+  final QuizController controller;
+  const QuizView({super.key, required this.controller});
 
   @override
   State<QuizView> createState() => _QuizViewState();
@@ -15,7 +16,8 @@ class QuizView extends StatefulWidget {
 class _QuizViewState extends State<QuizView> {
   @override
   Widget build(BuildContext context) {
-    final msg = widget.data == null ? 'VAZIO' : widget.data.toString();
+    final data = widget.controller.data;
+    final msg = data == null ? 'VAZIO' : data.toString();
     final colors = Theme.of(context).colorScheme;
     final custom = Theme.of(context).extension<AppColorScheme>()!;
     return Scaffold(
@@ -25,8 +27,14 @@ class _QuizViewState extends State<QuizView> {
         builder: (context, constraints) {
           return Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [CircularCountdown(), Text(msg)],
+              children: [
+                SizedBox(height: 40),
+                CircularCountdown(),
+                SizedBox(height: 30),
+                Text(msg, style: TextStyle(color: custom.text)),
+                SizedBox(height: 60),
+                widget.controller.getOptionsCards(constraints, custom),
+              ],
             ),
           );
         },
@@ -78,7 +86,7 @@ class _QuizViewState extends State<QuizView> {
             );
           },
         );
-        if (shouldPop && mounted) {
+        if (shouldPop == true && mounted) {
           Navigator.of(
             context,
           ).pushReplacement(MaterialPageRoute(builder: (_) => HomeView()));

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mestre_nr/core/theme/app_colors.dart';
 import 'package:mestre_nr/core/utils/screen_constraints.dart';
-import 'package:mestre_nr/quiz/quiz_controller.dart';
-import 'package:mestre_nr/quiz/quiz_view.dart';
+import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
+import 'package:mestre_nr/quiz/views/quiz_view.dart';
 
 class LoadingView extends StatefulWidget {
   final Map<String, Object> userParams;
@@ -38,7 +38,7 @@ class _LoadingViewState extends State<LoadingView> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => QuizView(data: quizController.data),
+                      builder: (_) => QuizView(controller: quizController),
                     ),
                   );
                 });
