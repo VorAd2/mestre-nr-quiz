@@ -45,6 +45,7 @@ class _HomeViewState extends State<HomeView> {
                   "Selecione as NRs:",
                   style: TextStyle(
                     fontSize: sectionTitleSize,
+                    fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
                     color: custom.text,
                   ),
@@ -56,6 +57,7 @@ class _HomeViewState extends State<HomeView> {
                   "Selecione a dificuldade:",
                   style: TextStyle(
                     fontSize: sectionTitleSize,
+                    fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
                     color: custom.text,
                   ),
@@ -102,7 +104,8 @@ class _HomeViewState extends State<HomeView> {
                 "Mestre NR",
                 style: TextStyle(
                   fontSize: 26,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Poppins',
                   color: custom.text,
                 ),
               ),
@@ -229,7 +232,8 @@ class _HomeViewState extends State<HomeView> {
           style: TextStyle(
             fontSize: buttonFontSize,
             color: Colors.white,
-            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),

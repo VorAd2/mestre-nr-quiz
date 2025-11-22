@@ -67,7 +67,12 @@ class _LoadingViewState extends State<LoadingView> {
           Text(
             'Aguardando resposta do Gemini',
             textScaler: textScaler,
-            style: TextStyle(fontSize: 18, color: custom.text),
+            style: TextStyle(
+              fontSize: 17,
+              color: custom.text,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w600,
+            ),
           ),
           Text(
             widget.userParams.toString(),

@@ -30,7 +30,7 @@ class _QuizViewState extends State<QuizView> {
           final width = constraints.maxWidth;
           final spacing = width * 0.06;
           final countdownSize = width * 0.30;
-          final promptFontSize = width * 0.04;
+          final promptFontSize = width * 0.035;
           return Align(
             alignment: Alignment.topCenter,
             child: SingleChildScrollView(
@@ -42,6 +42,7 @@ class _QuizViewState extends State<QuizView> {
                     seconds: 20,
                     size: countdownSize,
                     color: colors.primary,
+                    custom: custom,
                   ),
                   SizedBox(height: spacing),
                   Text(
@@ -49,7 +50,8 @@ class _QuizViewState extends State<QuizView> {
                     textAlign: TextAlign.justify,
                     style: TextStyle(
                       fontSize: promptFontSize,
-                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600,
                       color: custom.text,
                     ),
                   ),
@@ -73,7 +75,10 @@ class _QuizViewState extends State<QuizView> {
     return AppBar(
       backgroundColor: colors.surfaceContainerLow,
       centerTitle: true,
-      title: Text('Quiz', style: TextStyle(color: colors.onSurfaceVariant)),
+      title: Text(
+        'Quiz',
+        style: TextStyle(color: colors.onSurfaceVariant, fontFamily: 'Poppins'),
+      ),
       leading: getReturnBtn(colors),
       actions: const [ThemeButton()],
     );
