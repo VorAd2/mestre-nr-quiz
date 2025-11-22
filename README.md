@@ -1,3 +1,5 @@
+![Status do Projeto](https://img.shields.io/badge/status-development-blue?style=for-the-badge)
+
 # mestre_nr
 
 A new Flutter project.
