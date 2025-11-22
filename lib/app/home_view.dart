@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mestre_nr/app/loading_view.dart';
 import 'package:mestre_nr/core/theme/app_colors.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
-import 'package:mestre_nr/core/utils/screen_constraints.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -24,104 +23,101 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       backgroundColor: custom.background,
       appBar: getAppBar(custom, colors),
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final width = constraints.maxWidth;
-            double badgeFontSize = ScreenConstraints.isMobile(width) ? 14 : 18;
-            double sectionTitleSize = ScreenConstraints.isMobile(width)
-                ? 16
-                : 20;
-            double buttonFontSize = ScreenConstraints.isMobile(width) ? 18 : 22;
-            double verticalSpacing = ScreenConstraints.isMobile(width)
-                ? 20
-                : 35;
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth;
+          final isMobile = width < 600;
+          final double horizontalPadding = isMobile ? 20 : 70;
+          final double badgeFontSize = isMobile ? 14 : 18;
+          final double sectionTitleSize = isMobile ? 16 : 20;
+          final double buttonFontSize = isMobile ? 18 : 22;
+          final double verticalSpacing = isMobile ? 20 : 35;
 
-            return SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: ScreenConstraints.isMobile(width) ? 20 : 80,
-                vertical: 20,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Selecione as NRs:",
-                      style: TextStyle(
-                        fontSize: sectionTitleSize,
-                        fontWeight: FontWeight.w600,
-                        color: custom.text,
-                      ),
-                    ),
+          return SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
+              vertical: 12,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Selecione as NRs:",
+                  style: TextStyle(
+                    fontSize: sectionTitleSize,
+                    fontWeight: FontWeight.w600,
+                    color: custom.text,
                   ),
-                  const SizedBox(height: 10),
-                  getNrs(width, badgeFontSize, colors),
-                  SizedBox(height: verticalSpacing * 1.5),
-
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Selecione a dificuldade:",
-                      style: TextStyle(
-                        fontSize: sectionTitleSize,
-                        fontWeight: FontWeight.w600,
-                        color: custom.text,
-                      ),
-                    ),
+                ),
+                const SizedBox(height: 10),
+                getNrs(badgeFontSize, colors, isMobile),
+                SizedBox(height: verticalSpacing * 1.5),
+                Text(
+                  "Selecione a dificuldade:",
+                  style: TextStyle(
+                    fontSize: sectionTitleSize,
+                    fontWeight: FontWeight.w600,
+                    color: custom.text,
                   ),
-                  const SizedBox(height: 10),
-                  getDropdown(width, badgeFontSize, colors),
-                  SizedBox(height: verticalSpacing * 2),
-
-                  getStartBtn(
-                    width: width,
-                    badgeFontSize: badgeFontSize,
-                    buttonFontSize: buttonFontSize,
-                    colors: colors,
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+                ),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.center,
+                  child: getDropdown(badgeFontSize, colors, isMobile),
+                ),
+                SizedBox(height: verticalSpacing * 1.5),
+                getStartBtn(
+                  badgeFontSize: badgeFontSize,
+                  buttonFontSize: buttonFontSize,
+                  colors: colors,
+                  isMobile: isMobile,
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
   PreferredSizeWidget getAppBar(AppColorScheme custom, ColorScheme colors) {
     return AppBar(
-      toolbarHeight: 70,
       backgroundColor: custom.background,
-      title: Padding(
-        padding: EdgeInsets.only(top: 15),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              'assets/icons/logo.svg',
-              width: 70,
-              height: 70,
-              colorFilter: ColorFilter.mode(colors.primary, BlendMode.srcIn),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              "Mestre NR",
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: custom.text,
+      toolbarHeight: 70,
+      title: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                'assets/icons/logo.svg',
+                width: 64,
+                height: 64,
+                colorFilter: ColorFilter.mode(colors.primary, BlendMode.srcIn),
               ),
-            ),
-          ],
-        ),
+              const SizedBox(width: 10),
+              Text(
+                "Mestre NR",
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: custom.text,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
-      actions: [ThemeButton()],
+      actions: const [
+        Padding(padding: EdgeInsets.only(right: 12), child: ThemeButton()),
+      ],
+      centerTitle: true,
     );
   }
 
-  Widget getNrs(double width, double badgeFontSize, ColorScheme colors) {
+  Widget getNrs(double badgeFontSize, ColorScheme colors, bool isMobile) {
     return Wrap(
       spacing: 8,
       runSpacing: 10,
@@ -138,7 +134,7 @@ class _HomeViewState extends State<HomeView> {
           child: Container(
             padding: EdgeInsets.symmetric(
               vertical: 8,
-              horizontal: ScreenConstraints.isMobile(width) ? 14 : 20,
+              horizontal: isMobile ? 14 : 20,
             ),
             decoration: BoxDecoration(
               color: selected ? colors.primary : colors.surface,
@@ -149,7 +145,7 @@ class _HomeViewState extends State<HomeView> {
               style: TextStyle(
                 fontSize: badgeFontSize,
                 color: selected ? Colors.white : colors.onSurface,
-                fontWeight: selected ? FontWeight.bold : FontWeight.w400,
+                fontWeight: selected ? FontWeight.bold : FontWeight.w500,
               ),
             ),
           ),
@@ -158,9 +154,9 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget getDropdown(double width, double badgeFontSize, ColorScheme colors) {
+  Widget getDropdown(double badgeFontSize, ColorScheme colors, bool isMobile) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: isMobile ? 4 : 6),
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -168,6 +164,7 @@ class _HomeViewState extends State<HomeView> {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
+          dropdownColor: colors.surface,
           hint: Text(
             "Escolher dificuldade",
             style: TextStyle(fontSize: badgeFontSize, color: colors.onSurface),
@@ -175,7 +172,7 @@ class _HomeViewState extends State<HomeView> {
           value: selectedDifficulty,
           icon: Icon(
             Icons.arrow_drop_down,
-            size: ScreenConstraints.isMobile(width) ? 22 : 26,
+            size: isMobile ? 22 : 28,
             color: colors.onSurface,
           ),
           items: const [
@@ -192,21 +189,19 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget getStartBtn({
-    required double width,
     required double badgeFontSize,
     required double buttonFontSize,
     required ColorScheme colors,
+    required bool isMobile,
   }) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: colors.primary,
-          padding: EdgeInsets.symmetric(
-            vertical: ScreenConstraints.isMobile(width) ? 12 : 18,
-          ),
+          padding: EdgeInsets.symmetric(vertical: isMobile ? 12 : 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
         onPressed: () {
@@ -231,7 +226,11 @@ class _HomeViewState extends State<HomeView> {
         },
         child: Text(
           "Iniciar Quiz",
-          style: TextStyle(fontSize: buttonFontSize, color: Colors.white),
+          style: TextStyle(
+            fontSize: buttonFontSize,
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
