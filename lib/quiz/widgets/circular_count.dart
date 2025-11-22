@@ -8,7 +8,7 @@ class CircularCountdown extends StatefulWidget {
 
   const CircularCountdown({
     super.key,
-    this.seconds = 10,
+    this.seconds = 20,
     this.size = 140,
     this.color = Colors.blue,
   });

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
+import 'package:mestre_nr/quiz/models/question_model.dart';
+import 'package:mestre_nr/quiz/widgets/circular_count.dart';
 import 'package:mestre_nr/app/home_view.dart';
 import 'package:mestre_nr/core/theme/app_colors.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
-import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
-import 'package:mestre_nr/quiz/widgets/circular_count.dart';
 
 class QuizView extends StatefulWidget {
   final QuizController controller;
@@ -17,24 +18,46 @@ class _QuizViewState extends State<QuizView> {
   @override
   Widget build(BuildContext context) {
     final data = widget.controller.data;
-    final msg = data == null ? 'VAZIO' : data.toString();
+    final msg = data?['questions']?[0]?['prompt'] ?? 'VAZIO';
     final colors = Theme.of(context).colorScheme;
     final custom = Theme.of(context).extension<AppColorScheme>()!;
+
     return Scaffold(
       backgroundColor: custom.background,
       appBar: getAppBar(colors),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          return Center(
-            child: Column(
-              children: [
-                SizedBox(height: 40),
-                CircularCountdown(),
-                SizedBox(height: 30),
-                Text(msg, style: TextStyle(color: custom.text)),
-                SizedBox(height: 60),
-                widget.controller.getOptionsCards(constraints, custom),
-              ],
+          final width = constraints.maxWidth;
+          final spacing = width * 0.06;
+          final countdownSize = width * 0.30;
+          final promptFontSize = width * 0.04;
+          return Align(
+            alignment: Alignment.topCenter,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+              child: Column(
+                children: [
+                  SizedBox(height: spacing),
+                  CircularCountdown(seconds: 20, size: countdownSize),
+                  SizedBox(height: spacing),
+                  Text(
+                    msg,
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      fontSize: promptFontSize,
+                      fontWeight: FontWeight.bold,
+                      color: custom.text,
+                    ),
+                  ),
+                  SizedBox(height: spacing),
+                  QuestionModel.getOptionsCards(
+                    constraints: constraints,
+                    data: data,
+                    colors: colors,
+                    custom: custom,
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -48,7 +71,7 @@ class _QuizViewState extends State<QuizView> {
       centerTitle: true,
       title: Text('Quiz', style: TextStyle(color: colors.onSurfaceVariant)),
       leading: getReturnBtn(colors),
-      actions: [ThemeButton()],
+      actions: const [ThemeButton()],
     );
   }
 
@@ -58,41 +81,37 @@ class _QuizViewState extends State<QuizView> {
       onPressed: () async {
         final shouldPop = await showDialog(
           context: context,
-          builder: (dialogContext) {
-            return AlertDialog(
-              backgroundColor: colors.surfaceContainerLow,
-              title: Text(
-                'Sair do Quiz?',
-                style: TextStyle(color: colors.onSurfaceVariant),
+          builder: (dialogContext) => AlertDialog(
+            backgroundColor: colors.surfaceContainerLow,
+            title: Text(
+              'Sair do Quiz?',
+              style: TextStyle(color: colors.onSurfaceVariant),
+            ),
+            content: Text(
+              'Tem certeza de que deseja retornar? Seu progresso será perdido.',
+              style: TextStyle(color: colors.onSurfaceVariant),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: const Text('Cancelar'),
               ),
-              content: Text(
-                'Tem certeza de que deseja retornar? Seu progresso será perdido.',
-                style: TextStyle(color: colors.onSurfaceVariant),
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                child: const Text('Confirmar'),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop(false);
-                  },
-                  child: Text('Cancelar'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop(true);
-                  },
-                  child: Text('Confirmar'),
-                ),
-              ],
-            );
-          },
+            ],
+          ),
         );
+
         if (shouldPop == true && mounted) {
-          Navigator.of(
+          Navigator.pushReplacement(
             context,
-          ).pushReplacement(MaterialPageRoute(builder: (_) => HomeView()));
+            MaterialPageRoute(builder: (_) => const HomeView()),
+          );
         }
       },
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
     );
   }
 }
