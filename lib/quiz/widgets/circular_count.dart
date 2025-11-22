@@ -10,7 +10,7 @@ class CircularCountdown extends StatefulWidget {
     super.key,
     this.seconds = 20,
     this.size = 140,
-    this.color = Colors.blue,
+    required this.color,
   });
 
   @override

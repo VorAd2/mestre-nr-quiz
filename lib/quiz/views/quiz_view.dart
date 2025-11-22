@@ -38,7 +38,11 @@ class _QuizViewState extends State<QuizView> {
               child: Column(
                 children: [
                   SizedBox(height: spacing),
-                  CircularCountdown(seconds: 20, size: countdownSize),
+                  CircularCountdown(
+                    seconds: 20,
+                    size: countdownSize,
+                    color: colors.primary,
+                  ),
                   SizedBox(height: spacing),
                   Text(
                     msg,
