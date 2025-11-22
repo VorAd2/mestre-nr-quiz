@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mestre_nr/core/theme/app_colors.dart';
-import 'package:mestre_nr/core/utils/screen_constraints.dart';
 import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
 import 'package:mestre_nr/quiz/views/quiz_view.dart';
 
@@ -25,64 +24,55 @@ class _LoadingViewState extends State<LoadingView> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final custom = Theme.of(context).extension<AppColorScheme>()!;
+
     return Scaffold(
       backgroundColor: custom.background,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return ValueListenableBuilder<bool>(
-            valueListenable: quizController.isLoaded,
-            builder: (context, loaded, _) {
-              if (loaded) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (!mounted) return;
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => QuizView(controller: quizController),
-                    ),
-                  );
-                });
-              }
-              return getLoadingContent(
-                constraints: constraints,
-                colors: colors,
-                custom: custom,
-                userParams: widget.userParams,
+      body: ValueListenableBuilder<bool>(
+        valueListenable: quizController.isLoaded,
+        builder: (context, loaded, _) {
+          if (loaded) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => QuizView(controller: quizController),
+                ),
               );
-            },
-          );
+            });
+          }
+
+          return _buildLoadingContent(colors, custom);
         },
       ),
     );
   }
 
-  Widget getLoadingContent({
-    required BoxConstraints constraints,
-    required ColorScheme colors,
-    required AppColorScheme custom,
-    required Object userParams,
-  }) {
-    final width = constraints.maxWidth;
-    final double fontSize = ScreenConstraints.isMobile(width) ? 16 : 18;
-    final double circularSize = ScreenConstraints.isMobile(width) ? 70 : 78;
+  Widget _buildLoadingContent(ColorScheme colors, AppColorScheme custom) {
+    final textScaler = MediaQuery.of(context).textScaler;
 
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         spacing: 40,
         children: [
-          CircularProgressIndicator(
-            constraints: BoxConstraints.tightFor(
-              width: circularSize,
-              height: circularSize,
+          SizedBox(
+            width: 70,
+            height: 70,
+            child: CircularProgressIndicator(
+              strokeWidth: 5,
+              color: colors.primary,
             ),
-            color: colors.primary,
           ),
           Text(
             'Aguardando resposta do Gemini',
-            style: TextStyle(fontSize: fontSize, color: custom.text),
+            textScaler: textScaler,
+            style: TextStyle(fontSize: 18, color: custom.text),
           ),
-          Text(userParams.toString()),
+          Text(
+            widget.userParams.toString(),
+            style: TextStyle(color: custom.text.withOpacity(0.6)),
+          ),
         ],
       ),
     );
