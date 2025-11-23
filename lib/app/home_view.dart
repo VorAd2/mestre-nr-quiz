@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mestre_nr/app/loading_view.dart';
+import 'package:mestre_nr/quiz/views/loading_view.dart';
 import 'package:mestre_nr/core/theme/app_colors.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
 

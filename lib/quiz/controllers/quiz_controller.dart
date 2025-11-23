@@ -24,7 +24,12 @@ class QuizController {
     }
     final raw = fetchRes.data;
     final jsonString = extractJson(raw as String);
-    data = jsonDecode(jsonString);
+    try {
+      data = jsonDecode(jsonString);
+    } catch (e) {
+      error = ErrorType.gemini;
+      data = null;
+    }
     isLoaded.value = true;
   }
 }

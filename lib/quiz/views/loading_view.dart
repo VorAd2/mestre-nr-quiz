@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mestre_nr/app/home_view.dart';
 import 'package:mestre_nr/core/theme/app_colors.dart';
 import 'package:mestre_nr/core/utils/error_type.dart';
+import 'package:mestre_nr/core/widgets/theme_button.dart';
 import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
 import 'package:mestre_nr/quiz/views/quiz_view.dart';
 
@@ -30,6 +31,10 @@ class _LoadingViewState extends State<LoadingView> {
 
     return Scaffold(
       backgroundColor: custom.background,
+      appBar: AppBar(
+        backgroundColor: custom.background,
+        actions: [ThemeButton()],
+      ),
       body: ValueListenableBuilder<bool>(
         valueListenable: quizController.isLoaded,
         builder: (context, loaded, _) {
@@ -38,7 +43,7 @@ class _LoadingViewState extends State<LoadingView> {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!mounted) return;
               if (quizController.error != null) {
-                _showErrorDialog(quizController.error!);
+                _showErrorDialog(quizController.error!, colors);
                 return;
               }
               Navigator.pushReplacement(
@@ -91,7 +96,7 @@ class _LoadingViewState extends State<LoadingView> {
     );
   }
 
-  void _showErrorDialog(ErrorType error) {
+  void _showErrorDialog(ErrorType error, ColorScheme colors) {
     String getErrorMessage(ErrorType error) {
       switch (error) {
         case ErrorType.quota:
@@ -110,6 +115,7 @@ class _LoadingViewState extends State<LoadingView> {
       barrierDismissible: false,
       builder: (dialogContext) {
         return AlertDialog(
+          backgroundColor: colors.surfaceContainerLow,
           title: const Text(
             "Erro",
             style: TextStyle(
@@ -118,7 +124,10 @@ class _LoadingViewState extends State<LoadingView> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          content: Text(getErrorMessage(error)),
+          content: Text(
+            getErrorMessage(error),
+            style: TextStyle(color: colors.onSurfaceVariant),
+          ),
           actions: [
             TextButton(
               child: const Text("OK"),
