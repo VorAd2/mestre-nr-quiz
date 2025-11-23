@@ -1,15 +1,27 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:mestre_nr/core/utils/error_type.dart';
+import 'package:mestre_nr/core/utils/fetch_result.dart';
 
 class GeminiService {
-  static Future<Object?> fetchQuizData(Map<String, Object> userParams) async {
-    String prompt = _generatePropmt(userParams);
+  static Future<FetchResult> fetchQuizData(
+    Map<String, Object> userParams,
+  ) async {
+    final String prompt = _generatePropmt(userParams);
+
     try {
       final response = await Gemini.instance.prompt(parts: [Part.text(prompt)]);
-      print('OUTPUT ${response?.output}');
-      return response?.output;
-    } catch (e) {
-      print('ERROR FETCH: $e');
-      return null;
+      return FetchResult.success(response?.output);
+    } on GeminiException catch (e) {
+      final msg = e.message.toString();
+      if (msg.contains('RESOURCE_EXHAUSTED')) {
+        return FetchResult.error(ErrorType.quota);
+      }
+      return FetchResult.error(ErrorType.gemini);
+    } on DioException catch (_) {
+      return FetchResult.error(ErrorType.network);
+    } catch (_) {
+      return FetchResult.error(ErrorType.unknown);
     }
   }
 
