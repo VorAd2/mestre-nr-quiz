@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mestre_nr/app/home_view.dart';
 import 'package:mestre_nr/core/theme/app_colors.dart';
-import 'package:mestre_nr/core/utils/error_type.dart';
+import 'package:mestre_nr/core/utils/generation_error_type.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
 import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
 import 'package:mestre_nr/quiz/views/quiz_view.dart';
@@ -32,8 +32,14 @@ class _LoadingViewState extends State<LoadingView> {
     return Scaffold(
       backgroundColor: custom.background,
       appBar: AppBar(
+        toolbarHeight: 70,
         backgroundColor: custom.background,
-        actions: [ThemeButton()],
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 12, top: 9),
+            child: ThemeButton(),
+          ),
+        ],
       ),
       body: ValueListenableBuilder<bool>(
         valueListenable: quizController.isLoaded,
@@ -42,8 +48,8 @@ class _LoadingViewState extends State<LoadingView> {
             _handledOutcome = true;
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!mounted) return;
-              if (quizController.error != null) {
-                _showErrorDialog(quizController.error!, colors);
+              if (quizController.generationError != null) {
+                _showErrorDialog(quizController.generationError!, colors);
                 return;
               }
               Navigator.pushReplacement(
@@ -63,7 +69,6 @@ class _LoadingViewState extends State<LoadingView> {
 
   Widget _buildLoadingContent(ColorScheme colors, AppColorScheme custom) {
     final textScaler = MediaQuery.of(context).textScaler;
-
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -96,16 +101,16 @@ class _LoadingViewState extends State<LoadingView> {
     );
   }
 
-  void _showErrorDialog(ErrorType error, ColorScheme colors) {
-    String getErrorMessage(ErrorType error) {
+  void _showErrorDialog(GenerationErrorType error, ColorScheme colors) {
+    String getErrorMessage(GenerationErrorType error) {
       switch (error) {
-        case ErrorType.quota:
+        case GenerationErrorType.quota:
           return 'Muitas solicitações foram feitas ao Gemini. Por favor, tente novamente mais tarde.';
-        case ErrorType.network:
+        case GenerationErrorType.network:
           return 'Erro de rede. Verifique sua conexão e tente novamente.';
-        case ErrorType.gemini:
-          return 'Ocorreu um problema na interação com o Gemini. Por favor, contate o desenvolvedor se o problema persistir.';
-        case ErrorType.unknown:
+        case GenerationErrorType.gemini:
+          return 'Ocorreu um problema na interação com o Gemini. Por favor, tente novamente e, se o problema persistir, contate o desenvolvedor.';
+        case GenerationErrorType.unknown:
           return 'Um erro inesperado ocorreu. Por favor, contate o desenvolvedor.';
       }
     }

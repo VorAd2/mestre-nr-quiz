@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
-import 'package:mestre_nr/core/utils/error_type.dart';
+import 'package:mestre_nr/core/utils/generation_error_type.dart';
 import 'package:mestre_nr/core/utils/fetch_result.dart';
 
 class GeminiService {
@@ -8,20 +8,19 @@ class GeminiService {
     Map<String, Object> userParams,
   ) async {
     final String prompt = _generatePropmt(userParams);
-
     try {
       final response = await Gemini.instance.prompt(parts: [Part.text(prompt)]);
       return FetchResult.success(response?.output);
     } on GeminiException catch (e) {
       final msg = e.message.toString();
       if (msg.contains('RESOURCE_EXHAUSTED')) {
-        return FetchResult.error(ErrorType.quota);
+        return FetchResult.error(GenerationErrorType.quota);
       }
-      return FetchResult.error(ErrorType.gemini);
+      return FetchResult.error(GenerationErrorType.gemini);
     } on DioException catch (_) {
-      return FetchResult.error(ErrorType.network);
+      return FetchResult.error(GenerationErrorType.network);
     } catch (_) {
-      return FetchResult.error(ErrorType.unknown);
+      return FetchResult.error(GenerationErrorType.unknown);
     }
   }
 
@@ -47,7 +46,7 @@ class GeminiService {
       - Estar formatada rigorosamente no JSON especificado abaixo.
 
       ### IMPORTANTE
-      - Retorne apenas o JSON.
+      - Retorne APENAS o JSON.
       - O JSON deve estar 100% válido e sem textos adicionais.
       - Não inclua comentários, explicações ou formatação Markdown.
 
@@ -55,17 +54,17 @@ class GeminiService {
       {
         "questions": [
           {
-            "id": 1,
+            "id": 0,
             "prompt": "Texto da pergunta...",
             "difficulty": "facil|medio|dificil",
             "nr": "NR-XX",
-            "options": [
-              { "label": "A", "text": "texto da alternativa A" },
-              { "label": "B", "text": "texto da alternativa B" },
-              { "label": "C", "text": "texto da alternativa C" },
-              { "label": "D", "text": "texto da alternativa D" }
+            "optionTexts": [
+              "texto da opção 0",
+              "texto da opção 1",
+              "texto da opção 2",
+              "texto da opção 3"
             ],
-            "correct_answer": "A"
+            "correctOptionIndex": 0|1|2|3
           },
           ...
         ]

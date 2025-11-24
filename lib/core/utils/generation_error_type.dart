@@ -1,4 +1,4 @@
-enum ErrorType {
+enum GenerationErrorType {
   quota, // usuário deve tentar mais tarde
   network, // problema de internet
   gemini, // erro interno da IA (usuário não resolve)

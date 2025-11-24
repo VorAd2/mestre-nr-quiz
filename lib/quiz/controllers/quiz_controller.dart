@@ -2,34 +2,61 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mestre_nr/core/services/gemini_service.dart';
-import 'package:mestre_nr/core/utils/error_type.dart';
+import 'package:mestre_nr/core/utils/generation_error_type.dart';
+import 'package:mestre_nr/quiz/models/question_model.dart';
 
 class QuizController {
   final isLoaded = ValueNotifier<bool>(false);
-  ErrorType? error;
-  late final Map<String, dynamic>? data;
+  GenerationErrorType? generationError;
+  List<QuestionModel>? questions;
+  int _currQuestionIndex = 0;
+  final currQuestionNotifier = ValueNotifier<QuestionModel?>(null);
 
   Future<void> generateData(Map<String, Object> userParams) async {
-    String extractJson(String text) {
-      final match = RegExp(r'\{[\s\S]*\}').firstMatch(text);
-      return match?.group(0) ?? text;
+    String? extractJsonString(String text) {
+      final cleanText = text.replaceAll(RegExp(r'```json|```'), '');
+      final startIndex = cleanText.indexOf('{');
+      final endIndex = cleanText.lastIndexOf('}');
+      if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
+        return cleanText.substring(startIndex, endIndex + 1);
+      }
+      return null;
     }
 
     final fetchRes = await GeminiService.fetchQuizData(userParams);
     if (!fetchRes.isSuccess) {
       isLoaded.value = true;
-      data = null;
-      error = fetchRes.error;
+      questions = null;
+      generationError = fetchRes.error;
       return;
     }
-    final raw = fetchRes.data;
-    final jsonString = extractJson(raw as String);
+    final raw = fetchRes.data as String;
+    final jsonString = extractJsonString(raw);
+    if (jsonString == null) {
+      generationError = GenerationErrorType.gemini;
+      questions = null;
+      print("ERRO: Nenhum JSON válido pôde ser extraído. Raw: $raw");
+      isLoaded.value = true;
+      return;
+    }
     try {
-      data = jsonDecode(jsonString);
+      final decoded = jsonDecode(jsonString);
+      final List<dynamic> rawList = decoded["questions"];
+      questions = rawList
+          .map((e) => QuestionModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+      currQuestionNotifier.value = questions![0];
     } catch (e) {
-      error = ErrorType.gemini;
-      data = null;
+      generationError = GenerationErrorType.gemini;
+      questions = null;
+      print("ERROR DECODING JSON FINAL: $e");
     }
     isLoaded.value = true;
+  }
+
+  void checkOption(QuestionModel question, int clickedOptionIndex) {
+    //Armazenar a resposta do usuario para a questão
+    _currQuestionIndex += 1;
+    currQuestionNotifier.value = questions![_currQuestionIndex];
   }
 }

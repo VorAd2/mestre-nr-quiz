@@ -114,7 +114,10 @@ class _HomeViewState extends State<HomeView> {
         ],
       ),
       actions: const [
-        Padding(padding: EdgeInsets.only(right: 12), child: ThemeButton()),
+        Padding(
+          padding: EdgeInsets.only(right: 12, top: 9),
+          child: ThemeButton(),
+        ),
       ],
       centerTitle: true,
     );
