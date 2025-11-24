@@ -69,7 +69,7 @@ class _CircularCountdownState extends State<CircularCountdown>
                 value: progress,
                 strokeWidth: 10,
                 color: widget.color,
-                backgroundColor: widget.color.withOpacity(0.2),
+                backgroundColor: widget.color.withValues(alpha: 0.2),
               ),
               Text(
                 _current <= 0 ? '0' : _current.toString(),

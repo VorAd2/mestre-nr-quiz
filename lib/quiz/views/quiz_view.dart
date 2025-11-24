@@ -18,10 +18,8 @@ class QuizView extends StatefulWidget {
 class _QuizViewState extends State<QuizView> {
   @override
   Widget build(BuildContext context) {
-    final questions = widget.controller.questions;
     final colors = Theme.of(context).colorScheme;
     final custom = Theme.of(context).extension<AppColorScheme>()!;
-
     return Scaffold(
       backgroundColor: custom.background,
       appBar: buildAppBar(colors),

@@ -94,7 +94,7 @@ class _LoadingViewState extends State<LoadingView> {
           ),
           Text(
             widget.userParams.toString(),
-            style: TextStyle(color: custom.text.withOpacity(0.6)),
+            style: TextStyle(color: custom.text),
           ),
         ],
       ),

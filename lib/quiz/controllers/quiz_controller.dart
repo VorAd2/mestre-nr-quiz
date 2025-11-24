@@ -25,9 +25,9 @@ class QuizController {
 
     final fetchRes = await GeminiService.fetchQuizData(userParams);
     if (!fetchRes.isSuccess) {
-      isLoaded.value = true;
       questions = null;
       generationError = fetchRes.error;
+      isLoaded.value = true;
       return;
     }
     final raw = fetchRes.data as String;
@@ -35,7 +35,6 @@ class QuizController {
     if (jsonString == null) {
       generationError = GenerationErrorType.gemini;
       questions = null;
-      print("ERRO: Nenhum JSON válido pôde ser extraído. Raw: $raw");
       isLoaded.value = true;
       return;
     }
@@ -49,7 +48,6 @@ class QuizController {
     } catch (e) {
       generationError = GenerationErrorType.gemini;
       questions = null;
-      print("ERROR DECODING JSON FINAL: $e");
     }
     isLoaded.value = true;
   }
