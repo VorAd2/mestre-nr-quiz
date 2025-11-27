@@ -14,8 +14,8 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Mestre NR',
-          theme: lightTheme,
-          darkTheme: darkTheme,
+          theme: buildAppThemeLight(),
+          darkTheme: buildAppThemeDark(),
           themeMode: mode,
           home: const HomeView(),
         );

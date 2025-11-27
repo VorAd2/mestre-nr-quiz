@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mestre_nr/app/home_view.dart';
-import 'package:mestre_nr/core/theme/app_colors.dart';
 import 'package:mestre_nr/core/utils/generation_error_type.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
 import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
@@ -26,14 +25,10 @@ class _LoadingViewState extends State<LoadingView> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final custom = Theme.of(context).extension<AppColorScheme>()!;
-
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: custom.background,
       appBar: AppBar(
         toolbarHeight: 70,
-        backgroundColor: custom.background,
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 12, top: 9),
@@ -49,7 +44,7 @@ class _LoadingViewState extends State<LoadingView> {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!mounted) return;
               if (quizController.generationError != null) {
-                _showErrorDialog(quizController.generationError!, colors);
+                _showErrorDialog(quizController.generationError!, cs);
                 return;
               }
               Navigator.pushReplacement(
@@ -61,13 +56,13 @@ class _LoadingViewState extends State<LoadingView> {
             });
           }
 
-          return _buildLoadingContent(colors, custom);
+          return _buildLoadingContent(cs);
         },
       ),
     );
   }
 
-  Widget _buildLoadingContent(ColorScheme colors, AppColorScheme custom) {
+  Widget _buildLoadingContent(ColorScheme cs) {
     final textScaler = MediaQuery.of(context).textScaler;
     return Center(
       child: Column(
@@ -77,31 +72,24 @@ class _LoadingViewState extends State<LoadingView> {
           SizedBox(
             width: 70,
             height: 70,
-            child: CircularProgressIndicator(
-              strokeWidth: 5,
-              color: colors.primary,
-            ),
+            child: CircularProgressIndicator(strokeWidth: 5, color: cs.primary),
           ),
           Text(
             'Aguardando resposta do Gemini',
             textScaler: textScaler,
             style: TextStyle(
               fontSize: 17,
-              color: custom.text,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w600,
             ),
           ),
-          Text(
-            widget.userParams.toString(),
-            style: TextStyle(color: custom.text),
-          ),
+          Text(widget.userParams.toString()),
         ],
       ),
     );
   }
 
-  void _showErrorDialog(GenerationErrorType error, ColorScheme colors) {
+  void _showErrorDialog(GenerationErrorType error, ColorScheme cs) {
     String getErrorMessage(GenerationErrorType error) {
       switch (error) {
         case GenerationErrorType.quota:
@@ -120,7 +108,7 @@ class _LoadingViewState extends State<LoadingView> {
       barrierDismissible: false,
       builder: (dialogContext) {
         return AlertDialog(
-          backgroundColor: colors.surfaceContainerLow,
+          backgroundColor: cs.surfaceContainer,
           title: const Text(
             "Erro",
             style: TextStyle(
@@ -131,7 +119,7 @@ class _LoadingViewState extends State<LoadingView> {
           ),
           content: Text(
             getErrorMessage(error),
-            style: TextStyle(color: colors.onSurfaceVariant),
+            style: TextStyle(color: cs.onSurfaceVariant),
           ),
           actions: [
             TextButton(

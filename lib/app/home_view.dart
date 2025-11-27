@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mestre_nr/quiz/views/loading_view.dart';
-import 'package:mestre_nr/core/theme/app_colors.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
 
 class HomeView extends StatefulWidget {
@@ -17,12 +16,10 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final custom = Theme.of(context).extension<AppColorScheme>()!;
+    final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: custom.background,
-      appBar: getAppBar(custom, colors),
+      appBar: getAppBar(cs),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
@@ -47,11 +44,10 @@ class _HomeViewState extends State<HomeView> {
                     fontSize: sectionTitleSize,
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
-                    color: custom.text,
                   ),
                 ),
                 const SizedBox(height: 10),
-                getNrs(badgeFontSize, colors, isMobile),
+                getNrs(badgeFontSize, cs, isMobile),
                 SizedBox(height: verticalSpacing * 1.5),
                 Text(
                   "Selecione a dificuldade:",
@@ -59,19 +55,18 @@ class _HomeViewState extends State<HomeView> {
                     fontSize: sectionTitleSize,
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
-                    color: custom.text,
                   ),
                 ),
                 const SizedBox(height: 10),
                 Align(
                   alignment: Alignment.center,
-                  child: getDropdown(badgeFontSize, colors, isMobile),
+                  child: getDropdown(badgeFontSize, cs, isMobile),
                 ),
                 SizedBox(height: verticalSpacing * 1.5),
                 getStartBtn(
                   badgeFontSize: badgeFontSize,
                   buttonFontSize: buttonFontSize,
-                  colors: colors,
+                  cs: cs,
                   isMobile: isMobile,
                 ),
               ],
@@ -82,9 +77,8 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  PreferredSizeWidget getAppBar(AppColorScheme custom, ColorScheme colors) {
+  PreferredSizeWidget getAppBar(ColorScheme cs) {
     return AppBar(
-      backgroundColor: custom.background,
       toolbarHeight: 70,
       title: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -97,7 +91,7 @@ class _HomeViewState extends State<HomeView> {
                 'assets/icons/logo.svg',
                 width: 64,
                 height: 64,
-                colorFilter: ColorFilter.mode(colors.primary, BlendMode.srcIn),
+                colorFilter: ColorFilter.mode(cs.primary, BlendMode.srcIn),
               ),
               const SizedBox(width: 10),
               Text(
@@ -106,7 +100,6 @@ class _HomeViewState extends State<HomeView> {
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
                   fontFamily: 'Poppins',
-                  color: custom.text,
                 ),
               ),
             ],
@@ -123,7 +116,7 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget getNrs(double badgeFontSize, ColorScheme colors, bool isMobile) {
+  Widget getNrs(double badgeFontSize, ColorScheme cs, bool isMobile) {
     return Wrap(
       spacing: 8,
       runSpacing: 10,
@@ -143,14 +136,14 @@ class _HomeViewState extends State<HomeView> {
               horizontal: isMobile ? 14 : 20,
             ),
             decoration: BoxDecoration(
-              color: selected ? colors.primary : colors.surface,
+              color: selected ? cs.primary : cs.surfaceContainer,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               "NR $nr",
               style: TextStyle(
                 fontSize: badgeFontSize,
-                color: selected ? Colors.white : colors.onSurface,
+                color: selected ? cs.onPrimary : cs.onSurface,
                 fontWeight: selected ? FontWeight.bold : FontWeight.w500,
               ),
             ),
@@ -160,26 +153,26 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget getDropdown(double badgeFontSize, ColorScheme colors, bool isMobile) {
+  Widget getDropdown(double badgeFontSize, ColorScheme cs, bool isMobile) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: isMobile ? 4 : 6),
       decoration: BoxDecoration(
-        color: colors.surface,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade400),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          dropdownColor: colors.surface,
+          dropdownColor: cs.surface,
           hint: Text(
             "Escolher dificuldade",
-            style: TextStyle(fontSize: badgeFontSize, color: colors.onSurface),
+            style: TextStyle(fontSize: badgeFontSize, color: cs.onSurface),
           ),
           value: selectedDifficulty,
           icon: Icon(
             Icons.arrow_drop_down,
             size: isMobile ? 22 : 28,
-            color: colors.onSurface,
+            color: cs.onSurface,
           ),
           items: const [
             DropdownMenuItem(value: "Fácil", child: Text("Fácil")),
@@ -197,14 +190,13 @@ class _HomeViewState extends State<HomeView> {
   Widget getStartBtn({
     required double badgeFontSize,
     required double buttonFontSize,
-    required ColorScheme colors,
+    required ColorScheme cs,
     required bool isMobile,
   }) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: colors.primary,
           padding: EdgeInsets.symmetric(vertical: isMobile ? 12 : 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
@@ -234,7 +226,6 @@ class _HomeViewState extends State<HomeView> {
           "Iniciar Quiz",
           style: TextStyle(
             fontSize: buttonFontSize,
-            color: Colors.white,
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w500,
           ),

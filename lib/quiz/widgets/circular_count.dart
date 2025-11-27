@@ -1,19 +1,16 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:mestre_nr/core/theme/app_colors.dart';
 
 class CircularCountdown extends StatefulWidget {
   final int seconds;
   final double size;
   final Color color;
-  final AppColorScheme custom;
 
   const CircularCountdown({
     super.key,
     this.seconds = 20,
     this.size = 140,
     required this.color,
-    required this.custom,
   });
 
   @override
@@ -77,7 +74,6 @@ class _CircularCountdownState extends State<CircularCountdown>
                   fontSize: widget.size * 0.25,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w700,
-                  color: widget.custom.text,
                 ),
               ),
             ],

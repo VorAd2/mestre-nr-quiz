@@ -13,7 +13,6 @@ class QuestionOptionsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
@@ -50,8 +49,6 @@ class QuestionOptionsGrid extends StatelessWidget {
                     horizontal: 10,
                     vertical: 12,
                   ),
-                  backgroundColor: colors.surfaceContainerLow,
-                  foregroundColor: colors.onSurfaceVariant,
                 ),
                 child: Text(
                   '(${getLetter(optionIndex)}) ${question.optionTexts[optionIndex]}',

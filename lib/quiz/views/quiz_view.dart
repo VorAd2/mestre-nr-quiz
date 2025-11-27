@@ -3,7 +3,6 @@ import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
 import 'package:mestre_nr/quiz/models/question_model.dart';
 import 'package:mestre_nr/quiz/widgets/circular_count.dart';
 import 'package:mestre_nr/app/home_view.dart';
-import 'package:mestre_nr/core/theme/app_colors.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
 import 'package:mestre_nr/quiz/widgets/question_options_grid.dart';
 
@@ -18,11 +17,9 @@ class QuizView extends StatefulWidget {
 class _QuizViewState extends State<QuizView> {
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final custom = Theme.of(context).extension<AppColorScheme>()!;
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: custom.background,
-      appBar: buildAppBar(colors),
+      appBar: buildAppBar(cs),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
@@ -35,8 +32,7 @@ class _QuizViewState extends State<QuizView> {
                 builder: (context, currQuestion, _) => buildLayoutColumn(
                   constraints: constraints,
                   question: currQuestion!,
-                  colors: colors,
-                  custom: custom,
+                  cs: cs,
                 ),
               ),
             ),
@@ -46,37 +42,29 @@ class _QuizViewState extends State<QuizView> {
     );
   }
 
-  PreferredSizeWidget buildAppBar(ColorScheme colors) {
+  PreferredSizeWidget buildAppBar(ColorScheme cs) {
     return AppBar(
-      backgroundColor: colors.surfaceContainerLow,
       centerTitle: true,
       toolbarHeight: 70,
-      title: Text(
-        'Quiz',
-        style: TextStyle(color: colors.onSurfaceVariant, fontFamily: 'Poppins'),
-      ),
-      leading: buildReturnBtn(colors),
+      title: Text('Quiz', style: TextStyle(fontFamily: 'Poppins')),
+      leading: buildReturnBtn(cs),
       actions: const [
         Padding(padding: EdgeInsets.only(right: 12), child: ThemeButton()),
       ],
     );
   }
 
-  Widget buildReturnBtn(ColorScheme colors) {
+  Widget buildReturnBtn(ColorScheme cs) {
     return IconButton(
-      color: colors.onSurfaceVariant,
       onPressed: () async {
         final shouldPop = await showDialog(
+          barrierDismissible: false,
           context: context,
           builder: (dialogContext) => AlertDialog(
-            backgroundColor: colors.surfaceContainerLow,
-            title: Text(
-              'Sair do Quiz?',
-              style: TextStyle(color: colors.onSurfaceVariant),
-            ),
+            backgroundColor: cs.surfaceContainer,
+            title: Text('Sair do Quiz?'),
             content: Text(
               'Tem certeza de que deseja retornar? Seu progresso será perdido.',
-              style: TextStyle(color: colors.onSurfaceVariant),
             ),
             actions: [
               TextButton(
@@ -105,8 +93,7 @@ class _QuizViewState extends State<QuizView> {
   Column buildLayoutColumn({
     required BoxConstraints constraints,
     required QuestionModel question,
-    required ColorScheme colors,
-    required AppColorScheme custom,
+    required ColorScheme cs,
   }) {
     final width = constraints.maxWidth;
     final spacing = width * 0.06;
@@ -119,8 +106,7 @@ class _QuizViewState extends State<QuizView> {
           key: ValueKey(question.questionIndex),
           seconds: 20,
           size: countdownSize,
-          color: colors.primary,
-          custom: custom,
+          color: cs.primary,
         ),
         SizedBox(height: spacing),
         Text(
@@ -130,7 +116,6 @@ class _QuizViewState extends State<QuizView> {
             fontSize: promptFontSize,
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w600,
-            color: custom.text,
           ),
         ),
         SizedBox(height: spacing),
