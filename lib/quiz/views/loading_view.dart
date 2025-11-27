@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mestre_nr/app/home_view.dart';
-import 'package:mestre_nr/core/utils/generation_error_type.dart';
+import 'package:mestre_nr/core/utils/gemini_service_exception.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
 import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
 import 'package:mestre_nr/quiz/views/quiz_view.dart';
@@ -16,11 +16,25 @@ class LoadingView extends StatefulWidget {
 class _LoadingViewState extends State<LoadingView> {
   final quizController = QuizController();
   bool _handledOutcome = false;
+  final isLoadedNotifier = ValueNotifier<bool>(false);
+  late final String? errorMessage;
 
   @override
   void initState() {
     super.initState();
-    quizController.generateData(widget.userParams);
+    _generateData();
+  }
+
+  void _generateData() async {
+    try {
+      await quizController.generateData(widget.userParams);
+      errorMessage = null;
+      isLoadedNotifier.value = true;
+    } catch (e) {
+      final exception = e as GeminiServiceException;
+      errorMessage = exception.message;
+      isLoadedNotifier.value = true;
+    }
   }
 
   @override
@@ -37,14 +51,14 @@ class _LoadingViewState extends State<LoadingView> {
         ],
       ),
       body: ValueListenableBuilder<bool>(
-        valueListenable: quizController.isLoaded,
+        valueListenable: isLoadedNotifier,
         builder: (context, loaded, _) {
           if (loaded && !_handledOutcome) {
             _handledOutcome = true;
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!mounted) return;
-              if (quizController.generationError != null) {
-                _showErrorDialog(quizController.generationError!, cs);
+              if (errorMessage != null) {
+                _showErrorDialog(errorMessage!, cs);
                 return;
               }
               Navigator.pushReplacement(
@@ -89,20 +103,7 @@ class _LoadingViewState extends State<LoadingView> {
     );
   }
 
-  void _showErrorDialog(GenerationErrorType error, ColorScheme cs) {
-    String getErrorMessage(GenerationErrorType error) {
-      switch (error) {
-        case GenerationErrorType.quota:
-          return 'Muitas solicitações foram feitas ao Gemini. Por favor, tente novamente mais tarde.';
-        case GenerationErrorType.network:
-          return 'Erro de rede. Verifique sua conexão e tente novamente.';
-        case GenerationErrorType.gemini:
-          return 'Ocorreu um problema na interação com o Gemini. Por favor, tente novamente e, se o problema persistir, contate o desenvolvedor.';
-        case GenerationErrorType.unknown:
-          return 'Um erro inesperado ocorreu. Por favor, contate o desenvolvedor.';
-      }
-    }
-
+  void _showErrorDialog(String errorMessage, ColorScheme cs) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -118,7 +119,7 @@ class _LoadingViewState extends State<LoadingView> {
             ),
           ),
           content: Text(
-            getErrorMessage(error),
+            errorMessage,
             style: TextStyle(color: cs.onSurfaceVariant),
           ),
           actions: [
