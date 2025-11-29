@@ -2,54 +2,64 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:mestre_nr/core/utils/gemini_service_error_type.dart';
 import 'package:mestre_nr/core/utils/gemini_service_exception.dart';
 
-final responseSchema = Schema.object(
-  properties: {
-    'questions': Schema.array(
-      items: Schema.object(
-        properties: {
-          'id': Schema.integer(
-            description:
-                'Representa o id, variando de 0 a 9, da questão. A questão 1 tem id=0, a questao 2 tem id=1, e assim sucessivamente',
-          ),
-          'prompt': Schema.string(description: 'É o texto da questão'),
-          'nr': Schema.integer(minimum: 1, maximum: 38),
-          'optionTexts': Schema.array(
-            items: Schema.string(
+Schema _buildResponseSchema(int maxOptionChars) {
+  return Schema.object(
+    properties: {
+      'questions': Schema.array(
+        items: Schema.object(
+          properties: {
+            'id': Schema.integer(
               description:
-                  'Texto de cada uma das 4 alternativas de resposta à questão',
+                  'Representa o id, variando de 0 a 9, da questão. A questão 1 tem id=0, a questão 2 tem id=1, e assim sucessivamente',
             ),
-            minItems: 4,
-            maxItems: 4,
-          ),
-          'correctOptionIndex': Schema.integer(
-            description: 'O index da alternativa correta do array optionTexts',
-            maximum: 1,
-          ),
-        },
+            'prompt': Schema.string(description: 'É o texto da questão'),
+            'nr': Schema.integer(minimum: 1, maximum: 38),
+            'optionTexts': Schema.array(
+              items: Schema.string(
+                description:
+                    'Texto de cada uma das 4 alternativas de resposta à questão. Esse texto deve possuir, no máximo, $maxOptionChars caracteres.',
+              ),
+              minItems: 4,
+              maxItems: 4,
+            ),
+            'correctOptionIndex': Schema.integer(
+              description:
+                  'O índice (0..3) da alternativa correta do array optionTexts',
+              minimum: 0,
+              maximum: 3,
+            ),
+          },
+        ),
       ),
-    ),
-  },
-);
+    },
+  );
+}
 
-final instruction = '''
-  Você é um grande conhecedor da Higiene e Segurança do Trabalho no Brasil e é
-  um habilidoso formulador de perguntas, no estilo quiz, sobre o assunto.
+final _defaultInstruction = '''
+Você é um grande conhecedor da Higiene e Segurança do Trabalho no Brasil e é
+um habilidoso formulador de perguntas, no estilo quiz, sobre o assunto.
 ''';
 
-final aiModel = FirebaseAI.googleAI().generativeModel(
-  model: 'gemini-2.5-flash',
-  generationConfig: GenerationConfig(
-    temperature: 1.5,
-    responseMimeType: 'application/json',
-    responseSchema: responseSchema,
-  ),
-  systemInstruction: Content.system(instruction),
-);
-
 class GeminiService {
+  static final FirebaseAI _firebaseAi = FirebaseAI.googleAI();
+  static final String modelName = 'gemini-2.5-flash';
+
   static Future<String?> fetchQuizData(Map<String, Object> userParams) async {
-    final prompt = _generatePropmt(userParams);
-    final response = await aiModel.generateContent(prompt);
+    final nrs = userParams['nrs'] as Set<int>;
+    final diff = userParams['diff'] as String;
+    final maxOptionChars = userParams['maxOptionChars'] as int;
+    final responseSchema = _buildResponseSchema(maxOptionChars);
+    final aiModel = _firebaseAi.generativeModel(
+      model: modelName,
+      generationConfig: GenerationConfig(
+        temperature: 1.2,
+        responseMimeType: 'application/json',
+        responseSchema: responseSchema,
+      ),
+      systemInstruction: Content.system(_defaultInstruction),
+    );
+    final promptParts = _generatePrompt(nrs, diff, maxOptionChars);
+    final response = await aiModel.generateContent(promptParts);
     if (response.candidates.isEmpty) {
       throw GeminiServiceException(type: GeminiServiceErrorType.gemini);
     }
@@ -64,23 +74,27 @@ class GeminiService {
     return jsonString;
   }
 
-  static List<Content> _generatePropmt(Map<String, Object> userParams) {
-    final nrs = userParams['nrs'] as Set<int>;
-    final diff = userParams['diff'] as String;
+  static List<Content> _generatePrompt(
+    Set<int> nrs,
+    String diff,
+    int maxOptionChars,
+  ) {
+    final nQuestions = 10;
     final prompt =
-        '''  
-      Gere um conjunto de 10 questões no estilo QUIZ sobre as seguintes Normas Regulamentadoras (HST):
-      ${nrs.toString()}. As perguntas devem, se possivel, ser distribuídas igualmente entre as NRs fornecidas.
-      As questões NÃO devem ser entregues na ordem das NRs, mas sim embaralhadas aleatoriamente.
+        '''
+    Gere um conjunto de $nQuestions questões no estilo QUIZ sobre as seguintes Normas Regulamentadoras (HST):
+    ${nrs.join(', ')}.
 
-      Nível de dificuldade desejado para as questões: $diff
-      (Níveis possíveis: "fácil", "médio", "difícil")
+    As perguntas devem, se possível, ser distribuídas igualmente entre as NRs fornecidas e embaralhadas.
+    Nível de dificuldade desejado para as questões: $diff
+    (Valores possíveis: "fácil", "médio", "difícil")
 
-      Cada questão deve:
-      - Ser clara, objetiva e tecnicamente correta.
-      - Conter exatamente 4 alternativas.
-      - Ter APENAS UMA alternativa correta.
-      - Estar alinhada com o conteúdo das normas regulamentadoras pedidas.
+    Cada questão deve:
+    - Ser clara, objetiva e tecnicamente correta.
+    - Conter exatamente 4 alternativas.
+    - Ter APENAS UMA alternativa correta.
+    - As alternativas (optionTexts) devem ter no máximo $maxOptionChars caracteres cada.
+    - Forneça a saída em JSON conforme o schema fornecido (sem explicações adicionais). 
     ''';
     return [Content.text(prompt)];
   }

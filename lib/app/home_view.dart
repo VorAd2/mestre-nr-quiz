@@ -29,7 +29,7 @@ class _HomeViewState extends State<HomeView> {
           final double sectionTitleSize = isMobile ? 16 : 20;
           final double buttonFontSize = isMobile ? 18 : 22;
           final double verticalSpacing = isMobile ? 20 : 35;
-
+          final maxOptionChars = (0.53 * width).floor();
           return SingleChildScrollView(
             padding: EdgeInsets.symmetric(
               horizontal: horizontalPadding,
@@ -68,6 +68,7 @@ class _HomeViewState extends State<HomeView> {
                   buttonFontSize: buttonFontSize,
                   cs: cs,
                   isMobile: isMobile,
+                  maxOptionChars: maxOptionChars,
                 ),
               ],
             ),
@@ -192,6 +193,7 @@ class _HomeViewState extends State<HomeView> {
     required double buttonFontSize,
     required ColorScheme cs,
     required bool isMobile,
+    required int maxOptionChars,
   }) {
     return SizedBox(
       width: double.infinity,
@@ -214,7 +216,11 @@ class _HomeViewState extends State<HomeView> {
             );
             return;
           }
-          final userParams = {'nrs': selectedNRs, 'diff': selectedDifficulty!};
+          final userParams = {
+            'nrs': selectedNRs,
+            'diff': selectedDifficulty!,
+            'maxOptionChars': maxOptionChars,
+          };
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(

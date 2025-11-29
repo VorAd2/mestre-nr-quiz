@@ -16,11 +16,11 @@ class QuestionOptionsGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
-        const columns = 2;
+        const columns = 1;
         final spacing = width * 0.02;
         final cardWidth = (width - (spacing * (columns + 1))) / columns;
         final cardHeight = cardWidth * 0.70;
-        final fontSize = width * 0.032;
+        final fontSize = width * 0.036;
         String getLetter(int optionIndex) =>
             String.fromCharCode(65 + optionIndex);
         return Padding(
@@ -33,9 +33,10 @@ class QuestionOptionsGrid extends StatelessWidget {
               crossAxisCount: columns,
               crossAxisSpacing: spacing,
               mainAxisSpacing: spacing,
-              childAspectRatio: cardWidth / cardHeight * 0.8,
+              childAspectRatio: cardWidth / cardHeight * 2.7,
             ),
             itemBuilder: (_, optionIndex) {
+              final maxLinesConstant = 0.0111;
               return ElevatedButton(
                 onPressed: () {
                   onOptionClicked(optionIndex);
@@ -46,14 +47,17 @@ class QuestionOptionsGrid extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 12,
+                    horizontal: 8,
+                    vertical: 6,
                   ),
                 ),
                 child: Text(
                   '(${getLetter(optionIndex)}) ${question.optionTexts[optionIndex]}',
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.justify,
                   style: TextStyle(fontSize: fontSize, height: 1.2),
+                  maxLines: (width * maxLinesConstant).floor(),
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
                 ),
               );
             },

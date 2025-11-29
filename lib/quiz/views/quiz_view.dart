@@ -101,7 +101,7 @@ class _QuizViewState extends State<QuizView> {
     final promptFontSize = width * 0.035;
     return Column(
       children: [
-        SizedBox(height: spacing),
+        SizedBox(height: spacing * 0.5),
         CircularCountdown(
           key: ValueKey(question.questionIndex),
           seconds: 20,
