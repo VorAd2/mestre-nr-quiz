@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
 import 'package:mestre_nr/quiz/models/question_model.dart';
+import 'package:mestre_nr/quiz/views/result_view.dart';
 import 'package:mestre_nr/quiz/widgets/circular_count.dart';
 import 'package:mestre_nr/app/home_view.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
@@ -122,11 +123,15 @@ class _QuizViewState extends State<QuizView> {
         QuestionOptionsGrid(
           question: question,
           onOptionClicked: (clickedOptionIndex) {
+            widget.controller.checkOption(clickedOptionIndex);
             if (question.questionIndex == 9) {
-              print('ULTIMA QUESTAO');
-              return;
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ResultView(controller: widget.controller),
+                ),
+              );
             }
-            widget.controller.checkOption(question, clickedOptionIndex);
           },
         ),
       ],

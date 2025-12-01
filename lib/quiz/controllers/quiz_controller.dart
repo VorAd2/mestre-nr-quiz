@@ -6,9 +6,11 @@ import 'package:mestre_nr/core/services/gemini_service.dart';
 import 'package:mestre_nr/core/utils/gemini_service_error_type.dart';
 import 'package:mestre_nr/core/utils/gemini_service_exception.dart';
 import 'package:mestre_nr/quiz/models/question_model.dart';
+import 'package:mestre_nr/quiz/models/quiz_model.dart';
 
 class QuizController {
-  List<QuestionModel>? questions;
+  List<QuestionModel>? _questions;
+  late final QuizModel _quizModel;
   int _currQuestionIndex = 0;
   final currQuestionNotifier = ValueNotifier<QuestionModel?>(null);
 
@@ -25,15 +27,22 @@ class QuizController {
     }
   }
 
+  void _printFormattedJson(Map<String, dynamic> json) {
+    const encoder = JsonEncoder.withIndent('  ');
+    final prettyJson = encoder.convert(json);
+    print(prettyJson);
+  }
+
   Future<void> generateData(Map<String, Object> userParams) async {
     try {
       final jsonString = await GeminiService.fetchQuizData(userParams);
       final dynamic decoded = jsonDecode(jsonString!);
       final List<dynamic> rawList = decoded["questions"];
-      questions = rawList
+      _questions = rawList
           .map((e) => QuestionModel.fromJson(e as Map<String, dynamic>))
           .toList();
-      currQuestionNotifier.value = questions![0];
+      _quizModel = QuizModel.fromQuestions(_questions!);
+      currQuestionNotifier.value = _questions![0];
     } on ServerException catch (_) {
       throw GeminiServiceException(
         type: GeminiServiceErrorType.gemini,
@@ -61,9 +70,16 @@ class QuizController {
     }
   }
 
-  void checkOption(QuestionModel question, int clickedOptionIndex) {
-    //Armazenar a resposta do usuario para a questão
+  void checkOption(int clickedOptionIndex) {
+    _quizModel.insertUserAnswer(clickedOptionIndex);
+    if (_currQuestionIndex == 9) {
+      return;
+    }
     _currQuestionIndex += 1;
-    currQuestionNotifier.value = questions![_currQuestionIndex];
+    currQuestionNotifier.value = _questions![_currQuestionIndex];
+  }
+
+  List<Map<String, dynamic>> getQuestionsReview() {
+    return _quizModel.getQuestionsReview();
   }
 }

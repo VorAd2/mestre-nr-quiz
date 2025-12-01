@@ -26,13 +26,7 @@ ThemeData buildAppThemeLight() {
       foregroundColor: cs.onSurface,
       elevation: 1,
     ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: cs.primary,
-        foregroundColor: cs.onPrimary,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-    ),
+
     snackBarTheme: SnackBarThemeData(
       backgroundColor: cs.tertiary,
       contentTextStyle: TextStyle(color: cs.onSurface),
