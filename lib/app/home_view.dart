@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mestre_nr/core/theme/theme_controller.dart';
 import 'package:mestre_nr/quiz/views/loading_view.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
 
@@ -155,9 +156,19 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _buildDropdown(double badgeFontSize, ColorScheme cs, bool isMobile) {
+    final shadowColor = ThemeController.themeMode.value == ThemeMode.light
+        ? Colors.black.withAlpha(20)
+        : Colors.white.withAlpha(20);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: isMobile ? 4 : 6),
       decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor, // Cor personalizada
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
         color: cs.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade400),
@@ -169,12 +180,12 @@ class _HomeViewState extends State<HomeView> {
             "Escolher dificuldade",
             style: TextStyle(fontSize: badgeFontSize, color: cs.onSurface),
           ),
-          value: selectedDifficulty,
           icon: Icon(
             Icons.arrow_drop_down,
             size: isMobile ? 22 : 28,
             color: cs.onSurface,
           ),
+          value: selectedDifficulty,
           items: const [
             DropdownMenuItem(value: "Fácil", child: Text("Fácil")),
             DropdownMenuItem(value: "Médio", child: Text("Médio")),
@@ -199,6 +210,8 @@ class _HomeViewState extends State<HomeView> {
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
+          backgroundColor: cs.primary,
+          foregroundColor: cs.onPrimary,
           padding: EdgeInsets.symmetric(vertical: isMobile ? 12 : 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),

@@ -13,6 +13,7 @@ class QuestionOptionsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
@@ -32,7 +33,7 @@ class QuestionOptionsGrid extends StatelessWidget {
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: columns,
               crossAxisSpacing: spacing,
-              mainAxisSpacing: spacing,
+              mainAxisSpacing: spacing * 1.4,
               childAspectRatio: cardWidth / cardHeight * 2.7,
             ),
             itemBuilder: (_, optionIndex) {
@@ -42,6 +43,8 @@ class QuestionOptionsGrid extends StatelessWidget {
                   onOptionClicked(optionIndex);
                 },
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: cs.primary,
+                  foregroundColor: cs.onPrimary,
                   elevation: 3,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
