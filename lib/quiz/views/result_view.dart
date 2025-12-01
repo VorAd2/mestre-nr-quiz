@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mestre_nr/app/home_view.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
 import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
+import 'package:mestre_nr/quiz/views/loading_view.dart';
 import 'package:mestre_nr/quiz/widgets/review_tile.dart';
 
 class ResultView extends StatefulWidget {
-  final QuizController controller;
-  const ResultView({super.key, required this.controller});
+  const ResultView({super.key});
 
   @override
   State<ResultView> createState() => _ResultViewState();
 }
 
 class _ResultViewState extends State<ResultView> {
+  final QuizController controller = GetIt.I.get<QuizController>();
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -38,8 +40,17 @@ class _ResultViewState extends State<ResultView> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.replay),
+        onPressed: () {
+          final userParams = controller.userParams;
+          controller.reset();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => LoadingView(userParams: userParams),
+            ),
+          );
+        },
+        child: const Icon(Icons.replay),
       ),
     );
   }
@@ -48,15 +59,15 @@ class _ResultViewState extends State<ResultView> {
     return AppBar(
       centerTitle: true,
       toolbarHeight: 70,
-      title: Text('Resultados', style: TextStyle(fontFamily: 'Poppins')),
-      leading: buildReturnBtn(cs),
+      title: const Text('Resultados', style: TextStyle(fontFamily: 'Poppins')),
+      leading: buildHomeBtn(cs),
       actions: const [
         Padding(padding: EdgeInsets.only(right: 12), child: ThemeButton()),
       ],
     );
   }
 
-  IconButton buildReturnBtn(ColorScheme cs) {
+  IconButton buildHomeBtn(ColorScheme cs) {
     return IconButton(
       onPressed: () async {
         final shouldPop = await showDialog(
@@ -80,6 +91,7 @@ class _ResultViewState extends State<ResultView> {
         );
 
         if (shouldPop == true && mounted) {
+          controller.reset();
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => const HomeView()),
@@ -92,7 +104,7 @@ class _ResultViewState extends State<ResultView> {
 
   Column buildQuestionsReview(double width) {
     final children = <Widget>[];
-    final rawSummary = widget.controller.getQuestionsReview();
+    final rawSummary = controller.getQuestionsReview();
     for (int i = 0; i < 10; i++) {
       children.add(ReviewTile(width: width, data: rawSummary[i]));
     }

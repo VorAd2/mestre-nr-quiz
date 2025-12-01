@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
 import 'package:mestre_nr/quiz/models/question_model.dart';
 import 'package:mestre_nr/quiz/views/result_view.dart';
@@ -8,14 +9,13 @@ import 'package:mestre_nr/core/widgets/theme_button.dart';
 import 'package:mestre_nr/quiz/widgets/question_options_grid.dart';
 
 class QuizView extends StatefulWidget {
-  final QuizController controller;
-  const QuizView({super.key, required this.controller});
-
+  const QuizView({super.key});
   @override
   State<QuizView> createState() => _QuizViewState();
 }
 
 class _QuizViewState extends State<QuizView> {
+  final QuizController controller = GetIt.I.get<QuizController>();
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -29,7 +29,7 @@ class _QuizViewState extends State<QuizView> {
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: width * 0.04),
               child: ValueListenableBuilder(
-                valueListenable: widget.controller.currQuestionNotifier,
+                valueListenable: controller.currQuestionNotifier,
                 builder: (context, currQuestion, _) => buildLayoutColumn(
                   constraints: constraints,
                   question: currQuestion!,
@@ -63,8 +63,8 @@ class _QuizViewState extends State<QuizView> {
           context: context,
           builder: (dialogContext) => AlertDialog(
             backgroundColor: cs.surfaceContainer,
-            title: Text('Sair do Quiz?'),
-            content: Text(
+            title: const Text('Sair do Quiz?'),
+            content: const Text(
               'Tem certeza de que deseja retornar? Seu progresso será perdido.',
             ),
             actions: [
@@ -79,8 +79,8 @@ class _QuizViewState extends State<QuizView> {
             ],
           ),
         );
-
         if (shouldPop == true && mounted) {
+          controller.reset();
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => const HomeView()),
@@ -123,13 +123,11 @@ class _QuizViewState extends State<QuizView> {
         QuestionOptionsGrid(
           question: question,
           onOptionClicked: (clickedOptionIndex) {
-            widget.controller.checkOption(clickedOptionIndex);
+            controller.checkOption(clickedOptionIndex);
             if (question.questionIndex == 9) {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => ResultView(controller: widget.controller),
-                ),
+                MaterialPageRoute(builder: (_) => ResultView()),
               );
             }
           },

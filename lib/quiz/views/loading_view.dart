@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mestre_nr/app/home_view.dart';
 import 'package:mestre_nr/core/utils/gemini_service_exception.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
@@ -14,7 +15,7 @@ class LoadingView extends StatefulWidget {
 }
 
 class _LoadingViewState extends State<LoadingView> {
-  final quizController = QuizController();
+  final quizController = GetIt.I.get<QuizController>();
   bool _handledOutcome = false;
   final isLoadedNotifier = ValueNotifier<bool>(false);
   late final String? errorMessage;
@@ -63,9 +64,7 @@ class _LoadingViewState extends State<LoadingView> {
               }
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => QuizView(controller: quizController),
-                ),
+                MaterialPageRoute(builder: (_) => QuizView()),
               );
             });
           }

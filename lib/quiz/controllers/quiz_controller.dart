@@ -10,9 +10,21 @@ import 'package:mestre_nr/quiz/models/quiz_model.dart';
 
 class QuizController {
   List<QuestionModel>? _questions;
-  late final QuizModel _quizModel;
+  QuizModel? _quizModel;
   int _currQuestionIndex = 0;
-  final currQuestionNotifier = ValueNotifier<QuestionModel?>(null);
+  var currQuestionNotifier = ValueNotifier<QuestionModel?>(null);
+  final GeminiService _geminiService;
+
+  get userParams => _quizModel!.userParams;
+
+  QuizController(this._geminiService);
+
+  void reset() {
+    _questions = null;
+    _quizModel = null;
+    _currQuestionIndex = 0;
+    currQuestionNotifier = ValueNotifier<QuestionModel?>(null);
+  }
 
   String _getErrorMessage(GeminiServiceErrorType error) {
     switch (error) {
@@ -35,13 +47,16 @@ class QuizController {
 
   Future<void> generateData(Map<String, Object> userParams) async {
     try {
-      final jsonString = await GeminiService.fetchQuizData(userParams);
+      final jsonString = await _geminiService.fetchQuizData(userParams);
       final dynamic decoded = jsonDecode(jsonString!);
       final List<dynamic> rawList = decoded["questions"];
       _questions = rawList
           .map((e) => QuestionModel.fromJson(e as Map<String, dynamic>))
           .toList();
-      _quizModel = QuizModel.fromQuestions(_questions!);
+      _quizModel = QuizModel.fromQuestions(
+        questions: _questions!,
+        userParams: userParams,
+      );
       currQuestionNotifier.value = _questions![0];
     } on ServerException catch (_) {
       throw GeminiServiceException(
@@ -71,7 +86,7 @@ class QuizController {
   }
 
   void checkOption(int clickedOptionIndex) {
-    _quizModel.insertUserAnswer(clickedOptionIndex);
+    _quizModel!.insertUserAnswer(clickedOptionIndex);
     if (_currQuestionIndex == 9) {
       return;
     }
@@ -80,6 +95,6 @@ class QuizController {
   }
 
   List<Map<String, dynamic>> getQuestionsReview() {
-    return _quizModel.getQuestionsReview();
+    return _quizModel!.getQuestionsReview();
   }
 }

@@ -41,10 +41,10 @@ um habilidoso formulador de perguntas, no estilo quiz, sobre o assunto.
 ''';
 
 class GeminiService {
-  static final FirebaseAI _firebaseAi = FirebaseAI.googleAI();
-  static final String modelName = 'gemini-2.5-flash';
+  final FirebaseAI _firebaseAi = FirebaseAI.googleAI();
+  final String modelName = 'gemini-2.5-flash';
 
-  static Future<String?> fetchQuizData(Map<String, Object> userParams) async {
+  Future<String?> fetchQuizData(Map<String, Object> userParams) async {
     final nrs = userParams['nrs'] as Set<int>;
     final diff = userParams['diff'] as String;
     final maxOptionChars = userParams['maxOptionChars'] as int;

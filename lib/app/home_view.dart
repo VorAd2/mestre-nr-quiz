@@ -19,7 +19,7 @@ class _HomeViewState extends State<HomeView> {
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: getAppBar(cs),
+      appBar: _buildAppBar(cs),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
@@ -47,7 +47,7 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                getNrs(badgeFontSize, cs, isMobile),
+                _buildNrs(badgeFontSize, cs, isMobile),
                 SizedBox(height: verticalSpacing * 1.5),
                 Text(
                   "Selecione a dificuldade:",
@@ -60,10 +60,10 @@ class _HomeViewState extends State<HomeView> {
                 const SizedBox(height: 10),
                 Align(
                   alignment: Alignment.center,
-                  child: getDropdown(badgeFontSize, cs, isMobile),
+                  child: _buildDropdown(badgeFontSize, cs, isMobile),
                 ),
                 SizedBox(height: verticalSpacing * 1.5),
-                getStartBtn(
+                _buildStartBtn(
                   badgeFontSize: badgeFontSize,
                   buttonFontSize: buttonFontSize,
                   cs: cs,
@@ -78,7 +78,7 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  PreferredSizeWidget getAppBar(ColorScheme cs) {
+  PreferredSizeWidget _buildAppBar(ColorScheme cs) {
     return AppBar(
       toolbarHeight: 70,
       title: Column(
@@ -117,7 +117,7 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget getNrs(double badgeFontSize, ColorScheme cs, bool isMobile) {
+  Widget _buildNrs(double badgeFontSize, ColorScheme cs, bool isMobile) {
     return Wrap(
       spacing: 8,
       runSpacing: 10,
@@ -154,7 +154,7 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget getDropdown(double badgeFontSize, ColorScheme cs, bool isMobile) {
+  Widget _buildDropdown(double badgeFontSize, ColorScheme cs, bool isMobile) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: isMobile ? 4 : 6),
       decoration: BoxDecoration(
@@ -188,7 +188,7 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget getStartBtn({
+  Widget _buildStartBtn({
     required double badgeFontSize,
     required double buttonFontSize,
     required ColorScheme cs,

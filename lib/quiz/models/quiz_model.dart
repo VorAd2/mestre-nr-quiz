@@ -1,19 +1,31 @@
 import 'package:mestre_nr/quiz/models/question_model.dart';
 
 class QuizModel {
+  final Map<String, dynamic> userParams;
   final List<QuestionModel> questions;
   final List<int> answerKey;
   final userAnswers = <int>[];
 
-  QuizModel({required this.questions, required this.answerKey});
+  QuizModel({
+    required this.userParams,
+    required this.questions,
+    required this.answerKey,
+  });
 
-  factory QuizModel.fromQuestions(List<QuestionModel> questions) {
+  factory QuizModel.fromQuestions({
+    required List<QuestionModel> questions,
+    required Map<String, dynamic> userParams,
+  }) {
     final answerKey = <int>[];
     for (int i = 0; i < 10; i++) {
       final correctOptionIndex = questions[i].correctOptionIndex;
       answerKey.add(correctOptionIndex);
     }
-    return QuizModel(questions: questions, answerKey: answerKey);
+    return QuizModel(
+      userParams: userParams,
+      questions: questions,
+      answerKey: answerKey,
+    );
   }
 
   void insertUserAnswer(int optionIndex) {
