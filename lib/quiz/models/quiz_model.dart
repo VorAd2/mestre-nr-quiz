@@ -4,7 +4,7 @@ class QuizModel {
   final Map<String, dynamic> userParams;
   final List<QuestionModel> questions;
   final List<int> answerKey;
-  final userAnswers = <int>[];
+  final userAnswers = <int?>[];
 
   QuizModel({
     required this.userParams,
@@ -28,7 +28,7 @@ class QuizModel {
     );
   }
 
-  void insertUserAnswer(int optionIndex) {
+  void insertUserAnswer(int? optionIndex) {
     userAnswers.add(optionIndex);
   }
 
@@ -36,12 +36,16 @@ class QuizModel {
     final List<Map<String, dynamic>> summary = [];
     var i = 0;
     for (QuestionModel question in questions) {
+      final isTimeout = userAnswers[i] == null;
+      final userAnswer = isTimeout
+          ? null
+          : question.optionTexts[userAnswers[i]!];
       summary.add({
         'id': question.questionIndex,
         'prompt': question.prompt,
         'isCorrect': userAnswers[i] == question.correctOptionIndex,
         'correctOption': question.optionTexts[question.correctOptionIndex],
-        'userAnswer': question.optionTexts[userAnswers[i]],
+        'userAnswer': userAnswer,
       });
       i += 1;
     }

@@ -39,12 +39,6 @@ class QuizController {
     }
   }
 
-  void _printFormattedJson(Map<String, dynamic> json) {
-    const encoder = JsonEncoder.withIndent('  ');
-    final prettyJson = encoder.convert(json);
-    print(prettyJson);
-  }
-
   Future<void> generateData(Map<String, Object> userParams) async {
     try {
       final jsonString = await _geminiService.fetchQuizData(userParams);
@@ -85,7 +79,7 @@ class QuizController {
     }
   }
 
-  void checkOption(int clickedOptionIndex) {
+  void checkOption(int? clickedOptionIndex) {
     _quizModel!.insertUserAnswer(clickedOptionIndex);
     if (_currQuestionIndex == 9) {
       return;

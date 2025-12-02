@@ -187,9 +187,9 @@ class _HomeViewState extends State<HomeView> {
           ),
           value: selectedDifficulty,
           items: const [
-            DropdownMenuItem(value: "Fácil", child: Text("Fácil")),
-            DropdownMenuItem(value: "Médio", child: Text("Médio")),
-            DropdownMenuItem(value: "Difícil", child: Text("Difícil")),
+            DropdownMenuItem(value: "facil", child: Text("Fácil")),
+            DropdownMenuItem(value: "medio", child: Text("Médio")),
+            DropdownMenuItem(value: "dificil", child: Text("Difícil")),
           ],
           onChanged: (value) {
             setState(() => selectedDifficulty = value);

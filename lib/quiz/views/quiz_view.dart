@@ -119,14 +119,18 @@ class _QuizViewState extends State<QuizView> {
     final spacing = width * 0.06;
     final countdownSize = width * 0.30;
     final promptFontSize = width * 0.035;
+    final diff = controller.userParams['diff'];
     return Column(
       children: [
         SizedBox(height: spacing * 0.5),
         CircularCountdown(
           key: ValueKey(question.questionIndex),
-          seconds: 20,
+          seconds: diff == 'facil' ? 20 : 23,
           size: countdownSize,
           color: cs.primary,
+          onTimeExpired: () {
+            controller.checkOption(null);
+          },
         ),
         SizedBox(height: spacing),
         Text(

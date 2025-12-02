@@ -5,12 +5,14 @@ class CircularCountdown extends StatefulWidget {
   final int seconds;
   final double size;
   final Color color;
+  final void Function() onTimeExpired;
 
   const CircularCountdown({
     super.key,
     this.seconds = 20,
     this.size = 140,
     required this.color,
+    required this.onTimeExpired,
   });
 
   @override
@@ -38,6 +40,7 @@ class _CircularCountdownState extends State<CircularCountdown>
         _current--;
       });
       if (_current <= 0) {
+        widget.onTimeExpired();
         timer.cancel();
       }
     });

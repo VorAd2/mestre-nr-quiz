@@ -101,8 +101,9 @@ class _ReviewTileState extends State<ReviewTile> {
         'Questão ${widget.data['id'] + 1}',
         style: TextStyle(
           color: cs.primary,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w600,
           fontSize: widget.width * 0.046,
+          fontFamily: 'Poppins',
         ),
       ),
       AnimatedRotation(
@@ -118,6 +119,10 @@ class _ReviewTileState extends State<ReviewTile> {
   }
 
   Widget buildHideContent(ColorScheme cs) {
+    final isTimeout = widget.data['userAnswer'] == null;
+    final wrongIcon = isTimeout
+        ? Icons.timer_off_outlined
+        : Icons.dangerous_outlined;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -130,11 +135,11 @@ class _ReviewTileState extends State<ReviewTile> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.dangerous_outlined, color: cs.error),
+              Icon(wrongIcon, color: cs.error),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  widget.data['userAnswer'],
+                  widget.data['userAnswer'] ?? 'Não respondida',
                   style: TextStyle(
                     color: cs.onSurfaceVariant,
                     fontSize: widget.width * 0.0365,
