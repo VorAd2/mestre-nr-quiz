@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
 import 'package:mestre_nr/quiz/models/question_model.dart';
+import 'package:mestre_nr/quiz/utils/soundtrack_manager.dart';
 import 'package:mestre_nr/quiz/views/result_view.dart';
 import 'package:mestre_nr/quiz/widgets/circular_count.dart';
 import 'package:mestre_nr/app/home_view.dart';
@@ -16,6 +17,24 @@ class QuizView extends StatefulWidget {
 
 class _QuizViewState extends State<QuizView> {
   final QuizController controller = GetIt.I.get<QuizController>();
+  final SoundtrackManager _soundManager = SoundtrackManager();
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeSound();
+  }
+
+  @override
+  void dispose() {
+    _soundManager.dispose();
+    super.dispose();
+  }
+
+  Future<void> _initializeSound() async {
+    await _soundManager.initAndStart();
+  }
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
