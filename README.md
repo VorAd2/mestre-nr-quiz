@@ -1,18 +1,42 @@
-![Status do Projeto](https://img.shields.io/badge/status-development-blue?style=for-the-badge)
+<h1>
+  <img src="assets/icons/logo.svg" width="40" style="vertical-align: middle;" />
+  Mestre NR
+</h1>
 
-# mestre_nr
+A new flutter project
 
-A new Flutter project.
+# 🧩 Previews and Features
 
-## Getting Started
+# 🧰 Toolbox
 
-This project is a starting point for a Flutter application.
+<p align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=flutter,firebase,androidstudio,git" />
+  </a>
+</p>
+<br/>
 
-A few resources to get you started if this is your first Flutter project:
+# 🚀 How to Run
+<p>To run this project, you need to have Flutter installed and configured on your machine and an account with Firebase Console</p>
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 1. Clone the repository
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
+ git clone https://github.com/VorAd2/mestre-nr-quiz
+ cd mestre-nr-quiz
+```
+
+## 2. Create a Firebase project and install Firebase SDK
+- <a href='https://console.firebase.google.com'> Firebase Console </a>
+- <a href='https://firebase.google.com/docs/ai-logic'> Firebase SDK and Firebase AI tutorial </a>
+
+## 3. Install dependencies
+
+```
+flutter pub get
+```
+
+## 4. Run !!
+Here are two useful links teaching you how to run a Flutter app on mobile devices:
+- <a href='https://youtu.be/yxif9Tj8fDE?si=H1UAFWMO05MYUVre'> Physical device </a>
+- <a href='https://docs.flutter.dev/platform-integration/android/setup'> Virtual device </a>
