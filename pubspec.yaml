@@ -34,7 +34,6 @@ flutter:
     - assets/icons/logo.svg
     - assets/sounds/countdown.ogg
     - assets/sounds/loop.ogg
-    - .env
 
   fonts:
   - family: Poppins
