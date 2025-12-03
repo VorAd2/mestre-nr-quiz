@@ -96,7 +96,6 @@ class _LoadingViewState extends State<LoadingView> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          Text(widget.userParams.toString()),
         ],
       ),
     );
