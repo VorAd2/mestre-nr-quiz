@@ -8,6 +8,24 @@ Designed as a lightweight, mobile-friendly app for learning and quick assessment
 
 # 🧩 Previews and Features
 
+## Home Screen
+<p align="center">
+  <img src="assets/images/home_dark.png" width="300" style="margin-right: 15px;" />
+  <img src="assets/images/home_light.png" width="300" />
+</p>
+
+## Quiz Screen
+<p align="center">
+  <img src="assets/images/quiz_dark.png" width="300" style="margin-right: 15px;" />
+  <img src="assets/images/quiz_light.png" width="300" />
+</p>
+
+## Summary Screen
+<p align="center">
+  <img src="assets/images/result_dark.png" width="300" style="margin-right: 15px;" />
+  <img src="assets/images/result_light.png" width="300" />
+</p>
+
 # 🧰 Toolbox
 
 <p align="center">
