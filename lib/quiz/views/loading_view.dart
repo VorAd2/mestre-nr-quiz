@@ -79,13 +79,13 @@ class _LoadingViewState extends State<LoadingView> {
     final textScaler = MediaQuery.of(context).textScaler;
     return Center(
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         spacing: 40,
         children: [
-          SizedBox(
-            width: 70,
-            height: 70,
-            child: CircularProgressIndicator(strokeWidth: 5, color: cs.primary),
+          CircularProgressIndicator(
+            strokeWidth: 5,
+            color: cs.primary,
+            constraints: BoxConstraints(minWidth: 60, minHeight: 60),
           ),
           Text(
             'Aguardando resposta do Gemini',
