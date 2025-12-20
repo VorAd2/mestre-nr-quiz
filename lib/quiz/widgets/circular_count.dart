@@ -5,12 +5,12 @@ class CircularCountdown extends StatefulWidget {
   final int seconds;
   final double size;
   final Color color;
-  final void Function() onTimeExpired;
+  final VoidCallback onTimeExpired;
 
   const CircularCountdown({
     super.key,
     this.seconds = 20,
-    this.size = 140,
+    this.size = 120,
     required this.color,
     required this.onTimeExpired,
   });
@@ -22,24 +22,23 @@ class CircularCountdown extends StatefulWidget {
 class _CircularCountdownState extends State<CircularCountdown>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late int _current;
+  late final ValueNotifier<int> _currentSeconds;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _current = widget.seconds;
+    _currentSeconds = ValueNotifier(widget.seconds);
 
     _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: widget.seconds),
     )..forward();
 
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) return;
-      setState(() {
-        _current--;
-      });
-      if (_current <= 0) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_currentSeconds.value > 0) {
+        _currentSeconds.value--;
+      } else {
         widget.onTimeExpired();
         timer.cancel();
       }
@@ -49,6 +48,8 @@ class _CircularCountdownState extends State<CircularCountdown>
   @override
   void dispose() {
     _controller.dispose();
+    _timer?.cancel();
+    _currentSeconds.dispose();
     super.dispose();
   }
 
@@ -57,31 +58,44 @@ class _CircularCountdownState extends State<CircularCountdown>
     return SizedBox(
       width: widget.size,
       height: widget.size,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          final progress = 1 - _controller.value;
-          return Stack(
-            alignment: Alignment.center,
-            children: [
-              CircularProgressIndicator(
-                strokeAlign: 5,
-                value: progress,
-                strokeWidth: 10,
-                color: widget.color,
-                backgroundColor: widget.color.withValues(alpha: 0.2),
-              ),
-              Text(
-                _current <= 0 ? '0' : _current.toString(),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox.expand(
+            child: CircularProgressIndicator(
+              value: 1,
+              strokeWidth: 10,
+              color: widget.color.withOpacity(0.1),
+            ),
+          ),
+          AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return SizedBox.expand(
+                child: CircularProgressIndicator(
+                  value: 1 - _controller.value,
+                  strokeWidth: 10,
+                  color: widget.color,
+                  strokeCap: StrokeCap.round,
+                ),
+              );
+            },
+          ),
+          ValueListenableBuilder<int>(
+            valueListenable: _currentSeconds,
+            builder: (context, value, child) {
+              return Text(
+                value.toString(),
                 style: TextStyle(
-                  fontSize: widget.size * 0.25,
+                  fontSize: widget.size * 0.35,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w700,
+                  color: widget.color,
                 ),
-              ),
-            ],
-          );
-        },
+              );
+            },
+          ),
+        ],
       ),
     );
   }

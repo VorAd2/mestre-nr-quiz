@@ -37,27 +37,21 @@ class _QuizViewState extends State<QuizView> {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
     return Scaffold(
       appBar: buildAppBar(cs),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final width = constraints.maxWidth;
-          return Align(
-            alignment: Alignment.topCenter,
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-              child: ValueListenableBuilder(
-                valueListenable: controller.currQuestionNotifier,
-                builder: (context, currQuestion, _) => buildLayoutColumn(
-                  constraints: constraints,
-                  question: currQuestion!,
-                  cs: cs,
-                ),
-              ),
-            ),
-          );
-        },
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          child: ValueListenableBuilder(
+            valueListenable: controller.currQuestionNotifier,
+            builder: (context, currQuestion, _) {
+              if (currQuestion == null) return const SizedBox();
+              return buildLayoutColumn(question: currQuestion, theme: theme);
+            },
+          ),
+        ),
       ),
     );
   }
@@ -66,22 +60,26 @@ class _QuizViewState extends State<QuizView> {
     return AppBar(
       centerTitle: true,
       toolbarHeight: 70,
-      title: Text('Quiz', style: TextStyle(fontFamily: 'Poppins')),
+      title: const Text(
+        'Quiz',
+        style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.bold),
+      ),
       leading: buildReturnBtn(cs),
       actions: const [
-        Padding(padding: EdgeInsets.only(right: 12), child: ThemeButton()),
+        Padding(padding: EdgeInsets.only(right: 16), child: ThemeButton()),
       ],
     );
   }
 
   Widget buildReturnBtn(ColorScheme cs) {
     return IconButton(
+      tooltip: 'Sair do Quiz',
       onPressed: () async {
-        final shouldPop = await showDialog(
+        final shouldPop = await showDialog<bool>(
           barrierDismissible: false,
           context: context,
           builder: (dialogContext) => AlertDialog(
-            backgroundColor: cs.surfaceContainer,
+            backgroundColor: cs.surfaceContainerHigh,
             title: const Text('Sair do Quiz?'),
             content: const Text(
               'Tem certeza de que deseja retornar? Seu progresso será perdido.',
@@ -91,13 +89,14 @@ class _QuizViewState extends State<QuizView> {
                 onPressed: () => Navigator.of(dialogContext).pop(false),
                 child: const Text('Cancelar'),
               ),
-              TextButton(
+              FilledButton.tonal(
                 onPressed: () => Navigator.of(dialogContext).pop(true),
-                child: const Text('Confirmar'),
+                child: const Text('Sair'),
               ),
             ],
           ),
         );
+
         if (shouldPop == true && mounted) {
           controller.reset();
           Navigator.pushReplacement(
@@ -110,39 +109,41 @@ class _QuizViewState extends State<QuizView> {
     );
   }
 
-  Column buildLayoutColumn({
-    required BoxConstraints constraints,
+  Widget buildLayoutColumn({
     required QuestionModel question,
-    required ColorScheme cs,
+    required ThemeData theme,
   }) {
-    final width = constraints.maxWidth;
-    final spacing = width * 0.06;
-    final countdownSize = width * 0.30;
-    final promptFontSize = width * 0.035;
     final diff = controller.userParams['diff'];
+    final cs = theme.colorScheme;
     return Column(
       children: [
-        SizedBox(height: spacing * 0.5),
+        const SizedBox(height: 16),
         CircularCountdown(
           key: ValueKey(question.questionIndex),
           seconds: diff == 'facil' ? 20 : 23,
-          size: countdownSize,
+          size: 120,
           color: cs.primary,
           onTimeExpired: () {
             controller.checkOption(null);
+            if (question.questionIndex == 9) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => ResultView()),
+              );
+            }
           },
         ),
-        SizedBox(height: spacing),
+        const SizedBox(height: 32),
         Text(
           question.prompt,
           textAlign: TextAlign.justify,
-          style: TextStyle(
-            fontSize: promptFontSize,
+          style: theme.textTheme.titleMedium?.copyWith(
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w600,
+            height: 1.4,
           ),
         ),
-        SizedBox(height: spacing),
+        const SizedBox(height: 32),
         QuestionOptionsGrid(
           question: question,
           onOptionClicked: (clickedOptionIndex) {
@@ -155,6 +156,7 @@ class _QuizViewState extends State<QuizView> {
             }
           },
         ),
+        const SizedBox(height: 24),
       ],
     );
   }

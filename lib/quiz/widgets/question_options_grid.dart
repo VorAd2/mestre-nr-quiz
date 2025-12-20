@@ -13,60 +13,62 @@ class QuestionOptionsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        const columns = 1;
-        final spacing = width * 0.02;
-        final cardWidth = (width - (spacing * (columns + 1))) / columns;
-        final cardHeight = cardWidth * 0.70;
-        final fontSize = width * 0.036;
-        String getLetter(int optionIndex) =>
-            String.fromCharCode(65 + optionIndex);
-        return Padding(
-          padding: EdgeInsets.all(spacing),
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 4,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: columns,
-              crossAxisSpacing: spacing,
-              mainAxisSpacing: spacing * 1.4,
-              childAspectRatio: cardWidth / cardHeight * 2.7,
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    // Não precisamos de LayoutBuilder.
+    // A largura será controlada pelo Padding da tela pai (QuizView).
+    return Column(
+      crossAxisAlignment:
+          CrossAxisAlignment.stretch, // Estica botões na largura
+      spacing: 16, // Espaçamento nativo do Flutter (substituto do SizedBox)
+      children: List.generate(4, (index) {
+        final letter = String.fromCharCode(65 + index); // A, B, C, D
+        final text = question.optionTexts[index];
+
+        return ElevatedButton(
+          onPressed: () => onOptionClicked(index),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: cs.primary,
+            foregroundColor: cs.onPrimary,
+            elevation: 2,
+            // Permite que o botão cresça verticalmente se o texto for longo
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-            itemBuilder: (_, optionIndex) {
-              final maxLinesConstant = 0.0111;
-              return ElevatedButton(
-                onPressed: () {
-                  onOptionClicked(optionIndex);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: cs.primary,
-                  foregroundColor: cs.onPrimary,
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 6,
-                  ),
+            // Alinhamento do conteúdo dentro do botão
+            alignment: Alignment.centerLeft,
+          ),
+          child: Row(
+            crossAxisAlignment:
+                CrossAxisAlignment.start, // Alinha letra e texto no topo
+            children: [
+              // Letra (A, B, C...) com destaque
+              Text(
+                "$letter)",
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: cs.onPrimary.withOpacity(0.8),
                 ),
+              ),
+              const SizedBox(width: 12),
+              // Texto da opção
+              Expanded(
                 child: Text(
-                  '(${getLetter(optionIndex)}) ${question.optionTexts[optionIndex]}',
-                  textAlign: TextAlign.justify,
-                  style: TextStyle(fontSize: fontSize, height: 1.2),
-                  maxLines: (width * maxLinesConstant).floor(),
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: false,
+                  text,
+                  textAlign: TextAlign.start,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: cs.onPrimary,
+                    height: 1.2,
+                  ),
+                  // Removemos maxLines fixo. O texto aparece inteiro agora!
                 ),
-              );
-            },
+              ),
+            ],
           ),
         );
-      },
+      }),
     );
   }
 }

@@ -15,31 +15,24 @@ class ResultView extends StatefulWidget {
 
 class _ResultViewState extends State<ResultView> {
   final QuizController controller = GetIt.I.get<QuizController>();
+
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final reviewData = controller.getQuestionsReview();
     return Scaffold(
       appBar: buildAppBar(cs),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final bottomSystemPadding = MediaQuery.of(context).viewPadding.bottom;
-          final width = constraints.maxWidth;
-          final spacing = width * 0.06;
-          return SingleChildScrollView(
-            padding: EdgeInsets.only(bottom: bottomSystemPadding + 24),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Column(
-                children: [
-                  SizedBox(height: spacing),
-                  buildQuestionsReview(width),
-                ],
-              ),
-            ),
-          );
+      body: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
+        itemCount: reviewData.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 16),
+        itemBuilder: (context, index) {
+          return ReviewTile(data: reviewData[index]);
         },
       ),
       floatingActionButton: FloatingActionButton(
+        tooltip: 'Reiniciar Quiz',
         onPressed: () {
           final userParams = controller.userParams;
           controller.reset();
@@ -59,30 +52,34 @@ class _ResultViewState extends State<ResultView> {
     return AppBar(
       centerTitle: true,
       toolbarHeight: 70,
-      title: const Text('Resultados', style: TextStyle(fontFamily: 'Poppins')),
+      title: const Text(
+        'Resultados',
+        style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.bold),
+      ),
       leading: buildHomeBtn(cs),
       actions: const [
-        Padding(padding: EdgeInsets.only(right: 12), child: ThemeButton()),
+        Padding(padding: EdgeInsets.only(right: 16), child: ThemeButton()),
       ],
     );
   }
 
   IconButton buildHomeBtn(ColorScheme cs) {
     return IconButton(
+      tooltip: "Voltar ao Início",
       onPressed: () async {
-        final shouldPop = await showDialog(
+        final shouldPop = await showDialog<bool>(
           barrierDismissible: false,
           context: context,
           builder: (dialogContext) => AlertDialog(
-            backgroundColor: cs.surfaceContainer,
-            title: Text('Construir Outro Quiz?'),
-            content: Text('Você deseja retornar à tela inicial?'),
+            backgroundColor: cs.surfaceContainerHigh,
+            title: const Text('Novo Quiz?'),
+            content: const Text('Você deseja retornar à tela inicial?'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(false),
                 child: const Text('Cancelar'),
               ),
-              TextButton(
+              FilledButton.tonal(
                 onPressed: () => Navigator.of(dialogContext).pop(true),
                 child: const Text('Confirmar'),
               ),
@@ -100,14 +97,5 @@ class _ResultViewState extends State<ResultView> {
       },
       icon: const Icon(Icons.home),
     );
-  }
-
-  Column buildQuestionsReview(double width) {
-    final children = <Widget>[];
-    final rawSummary = controller.getQuestionsReview();
-    for (int i = 0; i < 10; i++) {
-      children.add(ReviewTile(width: width, data: rawSummary[i]));
-    }
-    return Column(spacing: 20, children: children);
   }
 }

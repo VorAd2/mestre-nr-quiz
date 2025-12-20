@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mestre_nr/core/theme/theme_controller.dart';
 import 'package:mestre_nr/quiz/views/loading_view.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
 
@@ -17,134 +16,103 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final textTheme = theme.textTheme;
     return Scaffold(
-      appBar: _buildAppBar(cs),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final width = constraints.maxWidth;
-          final isMobile = width < 600;
-          final double horizontalPadding = isMobile ? 20 : 70;
-          final double badgeFontSize = isMobile ? 14 : 18;
-          final double sectionTitleSize = isMobile ? 16 : 20;
-          final double buttonFontSize = isMobile ? 18 : 22;
-          final double verticalSpacing = isMobile ? 20 : 35;
-          final maxOptionChars = (0.53 * width).floor();
-          return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: horizontalPadding,
-              vertical: 12,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Selecione as NRs:",
-                  style: TextStyle(
-                    fontSize: sectionTitleSize,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w600,
-                  ),
+      appBar: _buildAppBar(cs, textTheme),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                "Selecione as NRs:",
+                style: textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Poppins',
                 ),
-                const SizedBox(height: 10),
-                _buildNrs(badgeFontSize, cs, isMobile),
-                SizedBox(height: verticalSpacing * 1.5),
-                Text(
-                  "Selecione a dificuldade:",
-                  style: TextStyle(
-                    fontSize: sectionTitleSize,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w600,
-                  ),
+              ),
+              const SizedBox(height: 16),
+              _buildNrs(cs, textTheme),
+              const SizedBox(height: 32),
+              Text(
+                "Selecione a dificuldade:",
+                style: textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Poppins',
                 ),
-                const SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.center,
-                  child: _buildDropdown(badgeFontSize, cs, isMobile),
-                ),
-                SizedBox(height: verticalSpacing * 1.5),
-                _buildStartBtn(
-                  badgeFontSize: badgeFontSize,
-                  buttonFontSize: buttonFontSize,
-                  cs: cs,
-                  isMobile: isMobile,
-                  maxOptionChars: maxOptionChars,
-                ),
-              ],
-            ),
-          );
-        },
+              ),
+              const SizedBox(height: 16),
+              _buildDropdown(cs, textTheme),
+              const SizedBox(height: 24),
+              _buildStartBtn(cs, textTheme),
+              const SizedBox(height: 24),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(ColorScheme cs) {
+  PreferredSizeWidget _buildAppBar(ColorScheme cs, TextTheme textTheme) {
     return AppBar(
       toolbarHeight: 70,
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      centerTitle: true,
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                'assets/icons/logo.svg',
-                width: 64,
-                height: 64,
-                colorFilter: ColorFilter.mode(cs.primary, BlendMode.srcIn),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                "Mestre NR",
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Poppins',
-                ),
-              ),
-            ],
+          SvgPicture.asset(
+            'assets/icons/logo.svg',
+            width: 40,
+            height: 40,
+            colorFilter: ColorFilter.mode(cs.primary, BlendMode.srcIn),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            "Mestre NR",
+            style: textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              fontFamily: 'Poppins',
+            ),
           ),
         ],
       ),
       actions: const [
-        Padding(
-          padding: EdgeInsets.only(right: 12, top: 9),
-          child: ThemeButton(),
-        ),
+        Padding(padding: EdgeInsets.only(right: 16), child: ThemeButton()),
       ],
-      centerTitle: true,
     );
   }
 
-  Widget _buildNrs(double badgeFontSize, ColorScheme cs, bool isMobile) {
+  Widget _buildNrs(ColorScheme cs, TextTheme textTheme) {
     return Wrap(
-      spacing: 8,
-      runSpacing: 10,
+      spacing: 12,
+      runSpacing: 12,
+      alignment: WrapAlignment.start,
       children: List.generate(38, (i) {
         final nr = i + 1;
         final selected = selectedNRs.contains(nr);
-
-        return GestureDetector(
+        return InkWell(
           onTap: () {
             setState(() {
               selected ? selectedNRs.remove(nr) : selectedNRs.add(nr);
             });
           },
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              vertical: 8,
-              horizontal: isMobile ? 14 : 20,
-            ),
+          borderRadius: BorderRadius.circular(20),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              color: selected ? cs.primary : cs.surfaceContainer,
+              color: selected ? cs.primary : cs.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: selected ? cs.primary : Colors.transparent,
+              ),
             ),
             child: Text(
               "NR $nr",
-              style: TextStyle(
-                fontSize: badgeFontSize,
+              style: textTheme.bodyMedium?.copyWith(
                 color: selected ? cs.onPrimary : cs.onSurface,
                 fontWeight: selected ? FontWeight.bold : FontWeight.w500,
               ),
@@ -155,64 +123,38 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildDropdown(double badgeFontSize, ColorScheme cs, bool isMobile) {
-    final shadowColor = ThemeController.themeMode.value == ThemeMode.light
-        ? Colors.black.withAlpha(20)
-        : Colors.white.withAlpha(20);
+  Widget _buildDropdown(ColorScheme cs, TextTheme textTheme) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: isMobile ? 4 : 6),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: shadowColor, // Cor personalizada
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
         color: cs.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade400),
+        border: Border.all(color: cs.outlineVariant),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          dropdownColor: cs.surface,
-          hint: Text(
-            "Escolher dificuldade",
-            style: TextStyle(fontSize: badgeFontSize, color: cs.onSurface),
-          ),
-          icon: Icon(
-            Icons.arrow_drop_down,
-            size: isMobile ? 22 : 28,
-            color: cs.onSurface,
-          ),
+          isExpanded: true,
+          dropdownColor: cs.surfaceContainer,
+          hint: Text("Escolher dificuldade", style: textTheme.bodyLarge),
+          icon: Icon(Icons.arrow_drop_down, color: cs.primary),
           value: selectedDifficulty,
           items: const [
             DropdownMenuItem(value: "facil", child: Text("Fácil")),
             DropdownMenuItem(value: "medio", child: Text("Médio")),
             DropdownMenuItem(value: "dificil", child: Text("Difícil")),
           ],
-          onChanged: (value) {
-            setState(() => selectedDifficulty = value);
-          },
+          onChanged: (value) => setState(() => selectedDifficulty = value),
         ),
       ),
     );
   }
 
-  Widget _buildStartBtn({
-    required double badgeFontSize,
-    required double buttonFontSize,
-    required ColorScheme cs,
-    required bool isMobile,
-    required int maxOptionChars,
-  }) {
+  Widget _buildStartBtn(ColorScheme cs, TextTheme textTheme) {
     return SizedBox(
       width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: cs.primary,
-          foregroundColor: cs.onPrimary,
-          padding: EdgeInsets.symmetric(vertical: isMobile ? 12 : 16),
+      height: 56,
+      child: FilledButton(
+        style: FilledButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -220,20 +162,14 @@ class _HomeViewState extends State<HomeView> {
         onPressed: () {
           if (selectedNRs.isEmpty || selectedDifficulty == null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  "Selecione ao menos uma NR e uma dificuldade.",
-                  style: TextStyle(fontSize: badgeFontSize),
-                ),
+              const SnackBar(
+                content: Text("Selecione ao menos uma NR e uma dificuldade."),
+                behavior: SnackBarBehavior.floating,
               ),
             );
             return;
           }
-          final userParams = {
-            'nrs': selectedNRs,
-            'diff': selectedDifficulty!,
-            'maxOptionChars': maxOptionChars,
-          };
+          final userParams = {'nrs': selectedNRs, 'diff': selectedDifficulty!};
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -243,10 +179,10 @@ class _HomeViewState extends State<HomeView> {
         },
         child: Text(
           "Iniciar Quiz",
-          style: TextStyle(
-            fontSize: buttonFontSize,
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
             fontFamily: 'Poppins',
-            fontWeight: FontWeight.w500,
+            color: cs.onPrimary,
           ),
         ),
       ),

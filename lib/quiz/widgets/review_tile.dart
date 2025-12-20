@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mestre_nr/core/theme/theme_controller.dart';
 
 class ReviewTile extends StatefulWidget {
   final Map<String, dynamic> data;
-  final double width;
-
-  const ReviewTile({super.key, required this.data, required this.width});
+  const ReviewTile({super.key, required this.data});
 
   @override
   State<ReviewTile> createState() => _ReviewTileState();
@@ -20,48 +17,36 @@ class _ReviewTileState extends State<ReviewTile> {
     });
   }
 
-  Color _getShadowColor() {
-    if (ThemeController.themeMode.value == ThemeMode.light) {
-      return Colors.black.withAlpha(100);
-    }
-    return Colors.white.withAlpha(20);
-  }
-
-  Color _getBorderColor() {
-    if (ThemeController.themeMode.value == ThemeMode.light) {
-      return Colors.black;
-    }
-    return Colors.white;
-  }
-
   @override
   Widget build(BuildContext context) {
-    const double radius = 50.0;
-    final cs = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
     return Center(
-      child: Material(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radius),
-          side: BorderSide(color: _getBorderColor(), width: 0.5),
-        ),
-        shadowColor: _getShadowColor(),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: _toggle,
-          splashColor: Colors.white24,
-          highlightColor: Colors.white10,
-          child: AnimatedSize(
-            duration: const Duration(milliseconds: 350),
-            curve: Curves.easeOutCubic,
-            alignment: Alignment.topCenter,
-            child: SizedBox(
-              width: widget.width * 0.85 > 500 ? 500 : widget.width * 0.85,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 600),
+        child: Card(
+          elevation: 2,
+          shadowColor: Colors.black26,
+          margin: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: BorderSide(color: cs.outlineVariant, width: 1),
+          ),
+          clipBehavior: Clip.antiAlias,
+          color: cs.surface,
+          child: InkWell(
+            onTap: _toggle,
+            borderRadius: BorderRadius.circular(24),
+            child: AnimatedSize(
+              duration: const Duration(milliseconds: 350),
+              curve: Curves.easeOutCubic,
+              alignment: Alignment.topCenter,
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20.0,
                   vertical: 16.0,
                 ),
-                child: _buildFullContent(cs),
+                child: _buildFullContent(theme, cs),
               ),
             ),
           ),
@@ -70,40 +55,39 @@ class _ReviewTileState extends State<ReviewTile> {
     );
   }
 
-  Widget _buildFullContent(ColorScheme cs) {
+  Widget _buildFullContent(ThemeData theme, ColorScheme cs) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: _buildHeader(cs),
-        ),
+        Row(children: _buildHeader(theme, cs)),
         if (_isExpanded) ...[
-          const SizedBox(height: 15),
-          const Divider(height: 1),
-          const SizedBox(height: 15),
-          buildHideContent(cs),
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
+          Divider(height: 1, color: cs.outlineVariant),
+          const SizedBox(height: 16),
+          _buildHiddenContent(theme, cs),
+          const SizedBox(height: 8),
         ],
       ],
     );
   }
 
-  List<Widget> _buildHeader(ColorScheme cs) {
+  List<Widget> _buildHeader(ThemeData theme, ColorScheme cs) {
     Color getAnswerColor() {
-      if (widget.data['isCorrect']) return cs.secondary;
+      if (widget.data['isCorrect']) return Colors.green;
       return cs.error;
     }
 
     return [
-      Icon(Icons.circle, color: getAnswerColor()),
-      Text(
-        'Questão ${widget.data['id'] + 1}',
-        style: TextStyle(
-          color: cs.primary,
-          fontWeight: FontWeight.w600,
-          fontSize: widget.width * 0.046,
-          fontFamily: 'Poppins',
+      Icon(Icons.circle, color: getAnswerColor(), size: 16),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Text(
+          'Questão ${widget.data['id'] + 1}',
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: cs.primary,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Poppins',
+          ),
         ),
       ),
       AnimatedRotation(
@@ -112,54 +96,61 @@ class _ReviewTileState extends State<ReviewTile> {
         curve: Curves.easeOutCubic,
         child: Icon(
           Icons.keyboard_arrow_down_rounded,
-          size: widget.width * 0.06,
+          color: cs.onSurfaceVariant,
+          size: 28,
         ),
       ),
     ];
   }
 
-  Widget buildHideContent(ColorScheme cs) {
+  Widget _buildHiddenContent(ThemeData theme, ColorScheme cs) {
     final isTimeout = widget.data['userAnswer'] == null;
     final wrongIcon = isTimeout
         ? Icons.timer_off_outlined
-        : Icons.dangerous_outlined;
+        : Icons.cancel_outlined;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           widget.data['prompt'],
-          style: TextStyle(color: cs.onSurface, fontSize: widget.width * 0.038),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: cs.onSurface,
+            height: 1.3,
+          ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 16),
         if (!widget.data['isCorrect'])
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(wrongIcon, color: cs.error),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  widget.data['userAnswer'] ?? 'Não respondida',
-                  style: TextStyle(
-                    color: cs.onSurfaceVariant,
-                    fontSize: widget.width * 0.0365,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(wrongIcon, color: cs.error, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    widget.data['userAnswer'] ?? 'Tempo esgotado',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: cs.error,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        SizedBox(height: 10),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.check, color: cs.secondary),
-            const SizedBox(width: 8),
+            const Icon(Icons.check, color: Colors.green, size: 20),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 widget.data['correctOption'],
-                style: TextStyle(
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: cs.onSurfaceVariant,
-                  fontSize: widget.width * 0.0365,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),

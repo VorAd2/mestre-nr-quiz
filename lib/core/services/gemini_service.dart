@@ -2,7 +2,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:mestre_nr/core/utils/gemini_service_error_type.dart';
 import 'package:mestre_nr/core/utils/gemini_service_exception.dart';
 
-Schema _buildResponseSchema(int maxOptionChars) {
+Schema _buildResponseSchema() {
   return Schema.object(
     properties: {
       'questions': Schema.array(
@@ -17,7 +17,7 @@ Schema _buildResponseSchema(int maxOptionChars) {
             'optionTexts': Schema.array(
               items: Schema.string(
                 description:
-                    'Texto de cada uma das 4 alternativas de resposta à questão. Esse texto deve possuir, no máximo, $maxOptionChars caracteres.',
+                    'Texto de cada uma das 4 alternativas de resposta à questão. Esse texto deve possuir, no máximo, 200 caracteres.',
               ),
               minItems: 4,
               maxItems: 4,
@@ -47,8 +47,7 @@ class GeminiService {
   Future<String?> fetchQuizData(Map<String, Object> userParams) async {
     final nrs = userParams['nrs'] as Set<int>;
     final diff = userParams['diff'] as String;
-    final maxOptionChars = userParams['maxOptionChars'] as int;
-    final responseSchema = _buildResponseSchema(maxOptionChars);
+    final responseSchema = _buildResponseSchema();
     final aiModel = _firebaseAi.generativeModel(
       model: modelName,
       generationConfig: GenerationConfig(
@@ -58,7 +57,7 @@ class GeminiService {
       ),
       systemInstruction: Content.system(_defaultInstruction),
     );
-    final promptParts = _generatePrompt(nrs, diff, maxOptionChars);
+    final promptParts = _generatePrompt(nrs, diff);
     final response = await aiModel.generateContent(promptParts);
     if (response.candidates.isEmpty) {
       throw GeminiServiceException(type: GeminiServiceErrorType.gemini);
@@ -74,11 +73,7 @@ class GeminiService {
     return jsonString;
   }
 
-  static List<Content> _generatePrompt(
-    Set<int> nrs,
-    String diff,
-    int maxOptionChars,
-  ) {
+  static List<Content> _generatePrompt(Set<int> nrs, String diff) {
     final nQuestions = 10;
     final prompt =
         '''
@@ -93,7 +88,7 @@ class GeminiService {
     - Ser clara, objetiva e tecnicamente correta.
     - Conter exatamente 4 alternativas.
     - Ter APENAS UMA alternativa correta.
-    - As alternativas (optionTexts) devem ter no máximo $maxOptionChars caracteres cada.
+    - As alternativas (optionTexts) devem ter no máximo 200 caracteres cada.
     - Forneça a saída em JSON conforme o schema fornecido (sem explicações adicionais). 
     ''';
     return [Content.text(prompt)];
