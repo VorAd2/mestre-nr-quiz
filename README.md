@@ -3,8 +3,7 @@
   Mestre NR
 </h1>
 
-A simple and engaging quiz game built with Flutter, featuring questions on Workplace Hygiene and Safety. The project integrates Firebase AI Logic to dynamically manage content and enhance the quiz experience.
-Designed as a lightweight, mobile-friendly app for learning and quick assessments.
+A simple and engaging quiz game built with Flutter, featuring questions on Workplace Hygiene and Safety in accordance with Brazil's Normas Regulamentadoras(NR's). The project integrates Firebase AI Logic to dynamically manage content and enhance the quiz experience. Designed as a lightweight, mobile-friendly app for learning and quick assessments.
 
 # 🧩 Previews and Features
 
