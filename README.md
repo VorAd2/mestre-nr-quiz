@@ -21,8 +21,8 @@ A simple and engaging quiz game built with Flutter, featuring questions on Workp
 
 ## Summary Screen
 <p align="center">
-  <img src="assets/images/result_dark.png" width="300" style="margin-right: 15px;" />
-  <img src="assets/images/result_light.png" width="300" />
+  <img src="assets/images/summary_dark.png" width="300" style="margin-right: 15px;" />
+  <img src="assets/images/summary_light.png" width="300" />
 </p>
 
 # 🧰 Toolbox
