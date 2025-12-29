@@ -5,7 +5,7 @@ import 'package:mestre_nr/quiz/models/question_model.dart';
 import 'package:mestre_nr/quiz/utils/soundtrack_manager.dart';
 import 'package:mestre_nr/quiz/views/result_view.dart';
 import 'package:mestre_nr/quiz/widgets/circular_count.dart';
-import 'package:mestre_nr/app/home_view.dart';
+import 'package:mestre_nr/home_view.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
 import 'package:mestre_nr/quiz/widgets/question_options_grid.dart';
 
@@ -28,6 +28,7 @@ class _QuizViewState extends State<QuizView> {
   @override
   void dispose() {
     _soundManager.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -40,7 +41,18 @@ class _QuizViewState extends State<QuizView> {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
     return Scaffold(
-      appBar: buildAppBar(cs),
+      appBar: _MyAppBar(
+        onBackHome: () async {
+          final shouldPop = await _showBackHomeDialog(cs);
+          if (mounted && shouldPop == true) {
+            controller.reset();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeView()),
+            );
+          }
+        },
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -48,7 +60,7 @@ class _QuizViewState extends State<QuizView> {
             valueListenable: controller.currQuestionNotifier,
             builder: (context, currQuestion, _) {
               if (currQuestion == null) return const SizedBox();
-              return buildLayoutColumn(question: currQuestion, theme: theme);
+              return _LayoutColumn(question: currQuestion);
             },
           ),
         ),
@@ -56,7 +68,37 @@ class _QuizViewState extends State<QuizView> {
     );
   }
 
-  PreferredSizeWidget buildAppBar(ColorScheme cs) {
+  Future<bool?> _showBackHomeDialog(ColorScheme cs) async {
+    final shouldPop = await showDialog<bool>(
+      barrierDismissible: false,
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: cs.surfaceContainerHigh,
+        title: const Text('Sair do Quiz?'),
+        content: const Text(
+          'Tem certeza de que deseja retornar? Seu progresso será perdido.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton.tonal(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Sair'),
+          ),
+        ],
+      ),
+    );
+    return shouldPop;
+  }
+}
+
+class _MyAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final VoidCallback onBackHome;
+  const _MyAppBar({required this.onBackHome});
+  @override
+  Widget build(BuildContext context) {
     return AppBar(
       centerTitle: true,
       toolbarHeight: 70,
@@ -64,57 +106,30 @@ class _QuizViewState extends State<QuizView> {
         'Quiz',
         style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.bold),
       ),
-      leading: buildReturnBtn(cs),
+      leading: IconButton(
+        tooltip: 'Sair do Quiz',
+        onPressed: onBackHome,
+        icon: const Icon(Icons.arrow_back),
+      ),
       actions: const [
         Padding(padding: EdgeInsets.only(right: 16), child: ThemeButton()),
       ],
     );
   }
 
-  Widget buildReturnBtn(ColorScheme cs) {
-    return IconButton(
-      tooltip: 'Sair do Quiz',
-      onPressed: () async {
-        final shouldPop = await showDialog<bool>(
-          barrierDismissible: false,
-          context: context,
-          builder: (dialogContext) => AlertDialog(
-            backgroundColor: cs.surfaceContainerHigh,
-            title: const Text('Sair do Quiz?'),
-            content: const Text(
-              'Tem certeza de que deseja retornar? Seu progresso será perdido.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(false),
-                child: const Text('Cancelar'),
-              ),
-              FilledButton.tonal(
-                onPressed: () => Navigator.of(dialogContext).pop(true),
-                child: const Text('Sair'),
-              ),
-            ],
-          ),
-        );
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
 
-        if (shouldPop == true && mounted) {
-          controller.reset();
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const HomeView()),
-          );
-        }
-      },
-      icon: const Icon(Icons.arrow_back),
-    );
-  }
-
-  Widget buildLayoutColumn({
-    required QuestionModel question,
-    required ThemeData theme,
-  }) {
-    final diff = controller.userParams['diff'];
+class _LayoutColumn extends StatelessWidget {
+  final QuizController controller = GetIt.I.get<QuizController>();
+  final QuestionModel question;
+  _LayoutColumn({required this.question});
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final diff = controller.userParams['diff'];
     return Column(
       children: [
         const SizedBox(height: 16),

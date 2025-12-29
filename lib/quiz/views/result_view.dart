@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mestre_nr/app/home_view.dart';
+import 'package:mestre_nr/home_view.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
 import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
 import 'package:mestre_nr/quiz/views/loading_view.dart';
@@ -18,24 +18,22 @@ class _ResultViewState extends State<ResultView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
     final reviewData = controller.getQuestionsReview();
     return Scaffold(
-      appBar: buildAppBar(cs),
-      body: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
-        itemCount: reviewData.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 16),
-        itemBuilder: (context, index) {
-          return ReviewTile(data: reviewData[index]);
+      appBar: _MyAppBar(
+        navigateHome: (shouldPop) {
+          if (shouldPop == true && mounted) {
+            controller.reset();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeView()),
+            );
+          }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        tooltip: 'Reiniciar Quiz',
-        onPressed: () {
-          final userParams = controller.userParams;
-          controller.reset();
+      body: _ReviewTiles(reviewData: reviewData),
+      floatingActionButton: _MyFAB(
+        navigateNewQuiz: (userParams) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -43,12 +41,19 @@ class _ResultViewState extends State<ResultView> {
             ),
           );
         },
-        child: const Icon(Icons.replay),
       ),
     );
   }
+}
 
-  PreferredSizeWidget buildAppBar(ColorScheme cs) {
+class _MyAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final controller = GetIt.I.get<QuizController>();
+  final void Function(bool?) navigateHome;
+
+  _MyAppBar({required this.navigateHome});
+
+  @override
+  Widget build(BuildContext context) {
     return AppBar(
       centerTitle: true,
       toolbarHeight: 70,
@@ -56,14 +61,26 @@ class _ResultViewState extends State<ResultView> {
         'Resultados',
         style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.bold),
       ),
-      leading: buildHomeBtn(cs),
+      leading: _HomeButton(navigateHome: navigateHome),
       actions: const [
         Padding(padding: EdgeInsets.only(right: 16), child: ThemeButton()),
       ],
     );
   }
 
-  IconButton buildHomeBtn(ColorScheme cs) {
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _HomeButton extends StatelessWidget {
+  final controller = GetIt.I.get<QuizController>();
+  final void Function(bool?) navigateHome;
+
+  _HomeButton({required this.navigateHome});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return IconButton(
       tooltip: "Voltar ao Início",
       onPressed: () async {
@@ -86,16 +103,43 @@ class _ResultViewState extends State<ResultView> {
             ],
           ),
         );
-
-        if (shouldPop == true && mounted) {
-          controller.reset();
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const HomeView()),
-          );
-        }
+        navigateHome(shouldPop);
       },
       icon: const Icon(Icons.home),
+    );
+  }
+}
+
+class _ReviewTiles extends StatelessWidget {
+  final List<Map<String, dynamic>> reviewData;
+  const _ReviewTiles({required this.reviewData});
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
+      itemCount: reviewData.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 16),
+      itemBuilder: (context, index) {
+        return ReviewTile(data: reviewData[index]);
+      },
+    );
+  }
+}
+
+class _MyFAB extends StatelessWidget {
+  final controller = GetIt.I.get<QuizController>();
+  final void Function(Map<String, Object>) navigateNewQuiz;
+  _MyFAB({required this.navigateNewQuiz});
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+      tooltip: 'Responder novamente',
+      onPressed: () {
+        final userParams = controller.userParams;
+        controller.reset();
+        navigateNewQuiz(userParams);
+      },
+      child: const Icon(Icons.replay),
     );
   }
 }

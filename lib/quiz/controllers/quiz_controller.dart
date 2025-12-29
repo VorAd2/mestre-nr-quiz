@@ -19,6 +19,10 @@ class QuizController {
 
   QuizController(this._geminiService);
 
+  void dispose() {
+    currQuestionNotifier.dispose();
+  }
+
   void reset() {
     _questions = null;
     _quizModel = null;

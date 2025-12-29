@@ -46,7 +46,10 @@ class _ReviewTileState extends State<ReviewTile> {
                   horizontal: 20.0,
                   vertical: 16.0,
                 ),
-                child: _buildFullContent(theme, cs),
+                child: _ExpansibleContentColumn(
+                  data: widget.data,
+                  isExpanded: _isExpanded,
+                ),
               ),
             ),
           ),
@@ -54,73 +57,105 @@ class _ReviewTileState extends State<ReviewTile> {
       ),
     );
   }
+}
 
-  Widget _buildFullContent(ThemeData theme, ColorScheme cs) {
+class _ExpansibleContentColumn extends StatelessWidget {
+  final Map<String, dynamic> data;
+  final bool isExpanded;
+
+  const _ExpansibleContentColumn({
+    required this.data,
+    required this.isExpanded,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Row(children: _buildHeader(theme, cs)),
-        if (_isExpanded) ...[
+        _Header(data: data, isExpanded: isExpanded),
+        if (isExpanded) ...[
           const SizedBox(height: 16),
           Divider(height: 1, color: cs.outlineVariant),
           const SizedBox(height: 16),
-          _buildHiddenContent(theme, cs),
+          _ExpandedContent(data: data),
           const SizedBox(height: 8),
         ],
       ],
     );
   }
+}
 
-  List<Widget> _buildHeader(ThemeData theme, ColorScheme cs) {
-    Color getAnswerColor() {
-      if (widget.data['isCorrect']) return Colors.green;
-      return cs.error;
-    }
+class _Header extends StatelessWidget {
+  final Map<String, dynamic> data;
+  final bool isExpanded;
 
-    return [
-      Icon(Icons.circle, color: getAnswerColor(), size: 16),
-      const SizedBox(width: 12),
-      Expanded(
-        child: Text(
-          'Questão ${widget.data['id'] + 1}',
-          style: theme.textTheme.titleMedium?.copyWith(
-            color: cs.primary,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Poppins',
-          ),
-        ),
-      ),
-      AnimatedRotation(
-        turns: _isExpanded ? 0.5 : 0,
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeOutCubic,
-        child: Icon(
-          Icons.keyboard_arrow_down_rounded,
-          color: cs.onSurfaceVariant,
-          size: 28,
-        ),
-      ),
-    ];
+  const _Header({required this.data, required this.isExpanded});
+
+  Color _getAnswerColor(ColorScheme cs) {
+    if (data['isCorrect']) return Colors.green;
+    return cs.error;
   }
 
-  Widget _buildHiddenContent(ThemeData theme, ColorScheme cs) {
-    final isTimeout = widget.data['userAnswer'] == null;
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    return Row(
+      children: [
+        Icon(Icons.circle, color: _getAnswerColor(cs), size: 16),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            'Questão ${data['id'] + 1}',
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: cs.primary,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Poppins',
+            ),
+          ),
+        ),
+        AnimatedRotation(
+          turns: isExpanded ? 0.5 : 0,
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeOutCubic,
+          child: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: cs.onSurfaceVariant,
+            size: 28,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ExpandedContent extends StatelessWidget {
+  final Map<String, dynamic> data;
+
+  const _ExpandedContent({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isTimeout = data['userAnswer'] == null;
     final wrongIcon = isTimeout
         ? Icons.timer_off_outlined
         : Icons.cancel_outlined;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.data['prompt'],
+          data['prompt'],
           style: theme.textTheme.bodyLarge?.copyWith(
             color: cs.onSurface,
             height: 1.3,
           ),
         ),
         const SizedBox(height: 16),
-        if (!widget.data['isCorrect'])
+        if (!data['isCorrect'])
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Row(
@@ -130,7 +165,7 @@ class _ReviewTileState extends State<ReviewTile> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    widget.data['userAnswer'] ?? 'Tempo esgotado',
+                    data['userAnswer'] ?? 'Tempo esgotado',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: cs.error,
                       fontWeight: FontWeight.w600,
@@ -147,7 +182,7 @@ class _ReviewTileState extends State<ReviewTile> {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                widget.data['correctOption'],
+                data['correctOption'],
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: cs.onSurfaceVariant,
                   fontWeight: FontWeight.w500,

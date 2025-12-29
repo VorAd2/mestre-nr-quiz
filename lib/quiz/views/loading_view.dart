@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mestre_nr/app/home_view.dart';
+import 'package:mestre_nr/home_view.dart';
 import 'package:mestre_nr/core/utils/gemini_service_exception.dart';
 import 'package:mestre_nr/core/widgets/theme_button.dart';
 import 'package:mestre_nr/quiz/controllers/quiz_controller.dart';
@@ -68,35 +68,8 @@ class _LoadingViewState extends State<LoadingView> {
               );
             });
           }
-
-          return _buildLoadingContent(cs);
+          return _LoadingContent();
         },
-      ),
-    );
-  }
-
-  Widget _buildLoadingContent(ColorScheme cs) {
-    final textScaler = MediaQuery.of(context).textScaler;
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        spacing: 40,
-        children: [
-          CircularProgressIndicator(
-            strokeWidth: 5,
-            color: cs.primary,
-            constraints: BoxConstraints(minWidth: 60, minHeight: 60),
-          ),
-          Text(
-            'Aguardando resposta do Gemini',
-            textScaler: textScaler,
-            style: TextStyle(
-              fontSize: 17,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -127,13 +100,43 @@ class _LoadingViewState extends State<LoadingView> {
                 Navigator.pop(dialogContext);
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => HomeView()),
+                  MaterialPageRoute(builder: (_) => const HomeView()),
                 );
               },
             ),
           ],
         );
       },
+    );
+  }
+}
+
+class _LoadingContent extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final textScaler = MediaQuery.of(context).textScaler;
+    final cs = Theme.of(context).colorScheme;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        spacing: 40,
+        children: [
+          CircularProgressIndicator(
+            strokeWidth: 5,
+            color: cs.primary,
+            constraints: BoxConstraints(minWidth: 60, minHeight: 60),
+          ),
+          Text(
+            'Aguardando resposta do Gemini',
+            textScaler: textScaler,
+            style: TextStyle(
+              fontSize: 17,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

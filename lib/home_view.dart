@@ -17,10 +17,9 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cs = theme.colorScheme;
     final textTheme = theme.textTheme;
     return Scaffold(
-      appBar: _buildAppBar(cs, textTheme),
+      appBar: const _MyAppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -35,7 +34,14 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ),
               const SizedBox(height: 16),
-              _buildNrs(cs, textTheme),
+              _NRsWrap(
+                selectedNRs: selectedNRs,
+                onTap: (nr, selected) {
+                  setState(() {
+                    selected ? selectedNRs.remove(nr) : selectedNRs.add(nr);
+                  });
+                },
+              ),
               const SizedBox(height: 32),
               Text(
                 "Selecione a dificuldade:",
@@ -45,9 +51,38 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ),
               const SizedBox(height: 16),
-              _buildDropdown(cs, textTheme),
+              _MyDropdown(
+                selectedDifficulty: selectedDifficulty,
+                onChanged: (value) {
+                  setState(() => selectedDifficulty = value);
+                },
+              ),
               const SizedBox(height: 24),
-              _buildStartBtn(cs, textTheme),
+              _StartButton(
+                onPressed: () {
+                  if (selectedNRs.isEmpty || selectedDifficulty == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          "Selecione ao menos uma NR e uma dificuldade.",
+                        ),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    return;
+                  }
+                  final userParams = {
+                    'nrs': selectedNRs,
+                    'diff': selectedDifficulty!,
+                  };
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LoadingView(userParams: userParams),
+                    ),
+                  );
+                },
+              ),
               const SizedBox(height: 24),
             ],
           ),
@@ -55,8 +90,15 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
+}
 
-  PreferredSizeWidget _buildAppBar(ColorScheme cs, TextTheme textTheme) {
+class _MyAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _MyAppBar();
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final textTheme = theme.textTheme;
     return AppBar(
       toolbarHeight: 70,
       centerTitle: true,
@@ -85,7 +127,19 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildNrs(ColorScheme cs, TextTheme textTheme) {
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _NRsWrap extends StatelessWidget {
+  final Set<int> selectedNRs;
+  final void Function(int, bool) onTap;
+  const _NRsWrap({required this.selectedNRs, required this.onTap});
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final textTheme = theme.textTheme;
     return Wrap(
       spacing: 12,
       runSpacing: 12,
@@ -95,9 +149,7 @@ class _HomeViewState extends State<HomeView> {
         final selected = selectedNRs.contains(nr);
         return InkWell(
           onTap: () {
-            setState(() {
-              selected ? selectedNRs.remove(nr) : selectedNRs.add(nr);
-            });
+            onTap(nr, selected);
           },
           borderRadius: BorderRadius.circular(20),
           child: AnimatedContainer(
@@ -122,8 +174,22 @@ class _HomeViewState extends State<HomeView> {
       }),
     );
   }
+}
 
-  Widget _buildDropdown(ColorScheme cs, TextTheme textTheme) {
+class _MyDropdown extends StatelessWidget {
+  final String? selectedDifficulty;
+  final void Function(String?) onChanged;
+
+  const _MyDropdown({
+    required this.selectedDifficulty,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final textTheme = theme.textTheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
@@ -143,13 +209,23 @@ class _HomeViewState extends State<HomeView> {
             DropdownMenuItem(value: "medio", child: Text("Médio")),
             DropdownMenuItem(value: "dificil", child: Text("Difícil")),
           ],
-          onChanged: (value) => setState(() => selectedDifficulty = value),
+          onChanged: onChanged,
         ),
       ),
     );
   }
+}
 
-  Widget _buildStartBtn(ColorScheme cs, TextTheme textTheme) {
+class _StartButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _StartButton({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final textTheme = theme.textTheme;
     return SizedBox(
       width: double.infinity,
       height: 56,
@@ -159,24 +235,7 @@ class _HomeViewState extends State<HomeView> {
             borderRadius: BorderRadius.circular(14),
           ),
         ),
-        onPressed: () {
-          if (selectedNRs.isEmpty || selectedDifficulty == null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Selecione ao menos uma NR e uma dificuldade."),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-            return;
-          }
-          final userParams = {'nrs': selectedNRs, 'diff': selectedDifficulty!};
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => LoadingView(userParams: userParams),
-            ),
-          );
-        },
+        onPressed: onPressed,
         child: Text(
           "Iniciar Quiz",
           style: textTheme.titleMedium?.copyWith(

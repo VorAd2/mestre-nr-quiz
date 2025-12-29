@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mestre_nr/app/my_app.dart';
+import 'package:mestre_nr/my_app.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mestre_nr/service_locator.dart';
 import 'firebase_options.dart';
