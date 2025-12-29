@@ -15,45 +15,35 @@ class QuestionOptionsGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-
-    // Não precisamos de LayoutBuilder.
-    // A largura será controlada pelo Padding da tela pai (QuizView).
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.stretch, // Estica botões na largura
-      spacing: 16, // Espaçamento nativo do Flutter (substituto do SizedBox)
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 16,
       children: List.generate(4, (index) {
-        final letter = String.fromCharCode(65 + index); // A, B, C, D
+        final letter = String.fromCharCode(65 + index);
         final text = question.optionTexts[index];
-
         return ElevatedButton(
           onPressed: () => onOptionClicked(index),
           style: ElevatedButton.styleFrom(
             backgroundColor: cs.primary,
             foregroundColor: cs.onPrimary,
             elevation: 2,
-            // Permite que o botão cresça verticalmente se o texto for longo
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            // Alinhamento do conteúdo dentro do botão
             alignment: Alignment.centerLeft,
           ),
           child: Row(
-            crossAxisAlignment:
-                CrossAxisAlignment.start, // Alinha letra e texto no topo
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Letra (A, B, C...) com destaque
               Text(
                 "$letter)",
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: cs.onPrimary.withOpacity(0.8),
+                  color: cs.onPrimary.withAlpha(184),
                 ),
               ),
               const SizedBox(width: 12),
-              // Texto da opção
               Expanded(
                 child: Text(
                   text,
@@ -62,7 +52,6 @@ class QuestionOptionsGrid extends StatelessWidget {
                     color: cs.onPrimary,
                     height: 1.2,
                   ),
-                  // Removemos maxLines fixo. O texto aparece inteiro agora!
                 ),
               ),
             ],

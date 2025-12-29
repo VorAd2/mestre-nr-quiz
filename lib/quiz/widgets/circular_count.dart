@@ -65,7 +65,7 @@ class _CircularCountdownState extends State<CircularCountdown>
             child: CircularProgressIndicator(
               value: 1,
               strokeWidth: 10,
-              color: widget.color.withOpacity(0.1),
+              color: widget.color.withAlpha(26),
             ),
           ),
           AnimatedBuilder(

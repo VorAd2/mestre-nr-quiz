@@ -60,7 +60,7 @@ class QuizController {
     } on GeminiServiceException catch (e) {
       e.message = _getErrorMessage(e.type);
       rethrow;
-    } on FormatException catch (e) {
+    } on FormatException catch (_) {
       throw GeminiServiceException(
         type: GeminiServiceErrorType.unknown,
         message: _getErrorMessage(GeminiServiceErrorType.unknown),
